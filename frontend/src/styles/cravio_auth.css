@@ -484,6 +484,97 @@
 }
 
 /* ==========================================================================
+   PARTNER WEB AUTH UTILITIES
+   ========================================================================== */
+.cravio-auth-container-wide.partner-wide {
+  max-width: 1040px;
+}
+
+.cravio-portal-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(247, 168, 39, 0.12);
+  border: 1px solid rgba(247, 168, 39, 0.3);
+  color: var(--cravio-gold);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.cravio-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .cravio-grid-2col {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.cravio-location-detect-btn {
+  background: rgba(247, 168, 39, 0.15);
+  border: 1px solid rgba(247, 168, 39, 0.3);
+  color: var(--cravio-gold);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+  font-family: var(--cravio-font);
+}
+
+.cravio-location-detect-btn:hover {
+  background: rgba(247, 168, 39, 0.28);
+}
+
+.cravio-partner-perks-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.cravio-partner-perk-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 10px 8px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.cravio-partner-perk-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-2px);
+}
+
+.cravio-partner-perk-icon {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.cravio-partner-perk-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.cravio-partner-perk-sub {
+  font-size: 9.5px;
+  color: var(--cravio-subtext);
+}
+
+/* ==========================================================================
    OTP VERIFICATION STYLING
    ========================================================================== */
 

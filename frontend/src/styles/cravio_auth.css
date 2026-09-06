@@ -1,19 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
 /* ==========================================================================
-   CRAVIO AUTHENTICATION & REGISTRATION STYLES
+   CRAVIO AUTHENTICATION & REGISTRATION (RESPONSIVE LAPTOP & MOBILE)
    ========================================================================== */
 
 :root {
   --cravio-gold: #f7a827;
   --cravio-gold-hover: #ffb73e;
-  --cravio-gold-dark: #e09214;
   --cravio-dark: #121316;
-  --cravio-card-bg: #141518;
-  --cravio-input-bg: #1c1d22;
+  --cravio-card-bg: #16171c;
+  --cravio-input-bg: #1f2026;
   --cravio-input-border: rgba(255, 255, 255, 0.1);
   --cravio-subtext: #9da4b0;
-  --cravio-outer-bg: #f0e6da;
   --cravio-font: 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -22,269 +20,189 @@
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background-color: var(--cravio-outer-bg);
+  background-color: #0d0e11;
   background-image: 
-    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.7) 0%, transparent 60%),
-    radial-gradient(circle at 10% 90%, rgba(247, 168, 39, 0.08) 0%, transparent 50%),
-    linear-gradient(135deg, #f3ece4 0%, #ebe0d3 100%);
+    radial-gradient(circle at 80% 20%, rgba(247, 168, 39, 0.1) 0%, transparent 45%),
+    radial-gradient(circle at 20% 80%, rgba(247, 168, 39, 0.06) 0%, transparent 50%),
+    linear-gradient(180deg, #131418 0%, #0a0b0e 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 36px 16px;
+  padding: 40px 24px;
   box-sizing: border-box;
   font-family: var(--cravio-font);
   overflow-x: hidden;
+  color: #ffffff;
 }
 
-/* Ambient Ribbon Wave */
-.cravio-auth-ribbon {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.cravio-auth-ribbon-path {
-  position: absolute;
-  width: 130%;
-  height: 240px;
-  top: 45%;
-  left: -15%;
-  transform: rotate(-14deg);
-  background: linear-gradient(90deg, #f5b938 0%, #f7c34b 50%, #f4b02a 100%);
-  opacity: 0.85;
-  filter: drop-shadow(0 15px 30px rgba(224, 150, 20, 0.25));
-  border-radius: 40px;
-  clip-path: polygon(0 25%, 100% 0%, 100% 65%, 0% 90%);
-}
-
-/* Ambient Decorative Culinary Elements (Desktop only) */
-.cravio-auth-decor {
-  position: absolute;
-  z-index: 2;
-  pointer-events: none;
-  user-select: none;
-}
-
-.cravio-auth-decor-mint-top {
-  top: 40px;
-  left: calc(50% - 370px);
-  width: 125px;
-  height: 125px;
-  mix-blend-mode: multiply;
-  transform: rotate(-25deg);
-  filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.15));
-}
-
-.cravio-auth-decor-tomato-top {
-  top: 60px;
-  right: calc(50% - 370px);
-  width: 125px;
-  height: 125px;
-  mix-blend-mode: multiply;
-  transform: rotate(15deg);
-  filter: drop-shadow(0 14px 24px rgba(180, 40, 40, 0.22));
-}
-
-.cravio-auth-decor-bowl-bottom {
-  bottom: 50px;
-  left: calc(50% - 380px);
-  width: 155px;
-  height: 155px;
-  mix-blend-mode: multiply;
-  transform: rotate(-10deg);
-  filter: drop-shadow(0 18px 30px rgba(70, 30, 20, 0.22));
-}
-
-.cravio-auth-decor-mint-bottom {
-  bottom: 50px;
-  right: calc(50% - 360px);
-  width: 120px;
-  height: 120px;
-  mix-blend-mode: multiply;
-  transform: rotate(35deg);
-  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.16));
-}
-
-.cravio-auth-peppercorns-right {
-  bottom: 230px;
-  right: calc(50% - 310px);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.cravio-auth-peppercorns-left {
-  bottom: 240px;
-  left: calc(50% - 300px);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* ==========================================================================
-   CENTRAL PHONE CARD CONTAINER
-   ========================================================================== */
-
-.cravio-auth-phone-container {
+/* Split Screen Card on Desktop (Responsive) */
+.cravio-auth-container-wide {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 416px;
+  max-width: 960px;
   background-color: var(--cravio-card-bg);
-  background-image: 
-    radial-gradient(circle at 85% 10%, rgba(247, 168, 39, 0.05) 0%, transparent 45%),
-    linear-gradient(180deg, #17181c 0%, #111215 100%);
-  border-radius: 46px;
-  padding: 30px 24px 28px 24px;
-  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 36px;
   box-shadow: 
-    0 35px 85px -15px rgba(0, 0, 0, 0.55),
-    0 10px 30px -10px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.08),
-    inset 0 1px 1px rgba(255, 255, 255, 0.15);
-  display: flex;
-  flex-direction: column;
-  color: #ffffff;
+    0 35px 85px -15px rgba(0, 0, 0, 0.7),
+    0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
-/* Faint food line doodle watermark in header */
-.cravio-auth-phone-container::before {
+/* ==========================================================================
+   LEFT COLUMN: BRAND SHOWCASE HERO PANEL (DESKTOP)
+   ========================================================================== */
+
+.cravio-auth-showcase-panel {
+  position: relative;
+  background: linear-gradient(180deg, #1d1f27 0%, #131418 100%);
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cravio-auth-showcase-panel::before {
   content: '';
   position: absolute;
-  top: 15px;
-  right: 140px;
-  width: 80px;
-  height: 80px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 19h12a1 1 0 0 0 1-1v-2a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v2a1 1 0 0 0 1 1zM7 14c-1.657 0-3-1.343-3-3 0-1.42 1-2.6 2.34-2.92A4.992 4.992 0 0 1 12 4a4.992 4.992 0 0 1 5.66 4.08A3.003 3.003 0 0 1 20 11c0 1.657-1.343 3-3 3'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  opacity: 0.05;
+  top: -50px;
+  left: -50px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(247, 168, 39, 0.2) 0%, transparent 70%);
+  filter: blur(40px);
   pointer-events: none;
 }
 
-/* Top Navigation Bar: Back Arrow & Food Dish Peek */
+.cravio-auth-showcase-top {
+  position: relative;
+  z-index: 2;
+}
+
+.cravio-auth-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #ffffff;
+  margin-bottom: 24px;
+}
+
+.cravio-auth-brand-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: baseline;
+}
+
+.cravio-auth-media-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.1 / 1;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+  margin: 20px 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cravio-auth-media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.cravio-auth-media-box:hover .cravio-auth-media-img {
+  transform: scale(1.05);
+}
+
+.cravio-auth-quote {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #e2e8f0;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.cravio-auth-quote span {
+  color: var(--cravio-gold);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   RIGHT COLUMN: FORM BODY
+   ========================================================================== */
+
+.cravio-auth-form-panel {
+  padding: 40px 40px 36px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
 .cravio-auth-top-bar {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
-  position: relative;
+  margin-bottom: 20px;
 }
 
 .cravio-back-btn {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.06);
   border: none;
   border-radius: 50%;
   cursor: pointer;
   padding: 0;
   transition: all 0.2s ease;
-  z-index: 5;
 }
 
 .cravio-back-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   transform: translateX(-2px);
 }
 
-.cravio-back-btn svg {
-  width: 22px;
-  height: 22px;
-}
-
-/* Header Dish Peek (Top Right) */
-.cravio-dish-peek-wrapper {
-  position: absolute;
-  top: -24px;
-  right: -20px;
-  width: 175px;
-  height: 175px;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.cravio-dish-peek-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  box-shadow: 
-    -10px 15px 30px rgba(0, 0, 0, 0.6),
-    0 0 0 2px rgba(255, 255, 255, 0.1);
-}
-
-/* Sparkle rays next to dish */
-.cravio-dish-sparkles {
-  position: absolute;
-  top: 28px;
-  left: -8px;
-  width: 32px;
-  height: 32px;
-  color: var(--cravio-gold);
-  animation: pulseSparkle 3s ease-in-out infinite;
-}
-
-/* Header Titles */
-.cravio-auth-header {
-  position: relative;
-  z-index: 4;
-  margin-bottom: 22px;
-  max-width: 65%;
-}
-
-.cravio-auth-title {
+.cravio-auth-heading {
   margin: 0;
   font-size: 32px;
   font-weight: 800;
-  line-height: 1.16;
   letter-spacing: -0.025em;
   color: #ffffff;
+  line-height: 1.18;
 }
 
-.cravio-wave-emoji {
-  display: inline-block;
-  margin-left: 4px;
-  animation: waveHands 2.5s ease-in-out infinite;
-  transform-origin: 70% 70%;
-}
-
-@keyframes waveHands {
-  0%, 100% { transform: rotate(0deg); }
-  20%, 60% { transform: rotate(14deg); }
-  40%, 80% { transform: rotate(-10deg); }
-}
-
-/* Wavy underline under "account" */
-.cravio-title-underline {
-  display: block;
-  width: 120px;
-  height: 10px;
-  margin-top: 4px;
+.cravio-accent-word {
   color: var(--cravio-gold);
 }
 
 .cravio-auth-subtitle {
-  margin: 10px 0 0 0;
-  font-size: 13.5px;
+  margin: 8px 0 20px 0;
+  font-size: 14px;
   color: var(--cravio-subtext);
   font-weight: 500;
 }
 
-/* Alert / Error Banner */
+/* Alert Error */
 .cravio-alert-error {
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
   color: #fca5a5;
   border-radius: 12px;
   padding: 10px 14px;
@@ -295,13 +213,11 @@
   gap: 8px;
 }
 
-/* Form Layout */
+/* Form inputs */
 .cravio-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  position: relative;
-  z-index: 4;
 }
 
 .cravio-input-group {
@@ -311,13 +227,11 @@
 }
 
 .cravio-input-label {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
   color: #f1f5f9;
-  letter-spacing: 0.01em;
 }
 
-/* Capsule Input Wrapper */
 .cravio-input-box {
   display: flex;
   align-items: center;
@@ -328,16 +242,14 @@
   padding: 0 14px;
   box-sizing: border-box;
   transition: all 0.2s ease;
-  position: relative;
 }
 
 .cravio-input-box:focus-within {
   border-color: var(--cravio-gold);
   box-shadow: 0 0 0 3px rgba(247, 168, 39, 0.18);
-  background-color: #202228;
+  background-color: #24252c;
 }
 
-/* Leading Icon */
 .cravio-input-icon-lead {
   display: flex;
   align-items: center;
@@ -352,7 +264,6 @@
   height: 19px;
 }
 
-/* Phone Selector Prefix */
 .cravio-phone-prefix {
   display: flex;
   align-items: center;
@@ -364,19 +275,8 @@
   font-weight: 600;
   color: #ffffff;
   user-select: none;
-  flex-shrink: 0;
 }
 
-.cravio-flag-icon {
-  font-size: 16px;
-}
-
-.cravio-prefix-caret {
-  color: #9da4b0;
-  font-size: 11px;
-}
-
-/* Actual HTML Input */
 .cravio-field-input {
   flex: 1;
   background: transparent;
@@ -384,17 +284,15 @@
   outline: none;
   color: #ffffff;
   font-family: var(--cravio-font);
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 500;
   width: 100%;
 }
 
 .cravio-field-input::placeholder {
   color: #64748b;
-  font-weight: 400;
 }
 
-/* Trailing Icon / Action */
 .cravio-input-icon-trail {
   display: flex;
   align-items: center;
@@ -406,53 +304,36 @@
   padding: 0;
   cursor: pointer;
   transition: color 0.15s ease;
-  flex-shrink: 0;
 }
 
 .cravio-input-icon-trail:hover {
   color: #cbd5e1;
 }
 
-.cravio-input-icon-trail svg {
-  width: 19px;
-  height: 19px;
-}
-
 .cravio-input-icon-trail.valid-check {
   color: #10b981;
 }
 
-/* Terms Agreement Checkbox */
+/* Checkbox */
 .cravio-terms-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: rgba(28, 29, 34, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 10px 14px;
-  margin-top: 2px;
+  gap: 10px;
   cursor: pointer;
   user-select: none;
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-.cravio-terms-row:hover {
-  background: rgba(28, 29, 34, 0.95);
-  border-color: rgba(247, 168, 39, 0.25);
+  margin-top: 2px;
 }
 
 .cravio-checkbox-custom {
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
   border: 1.8px solid var(--cravio-gold);
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.18s ease;
 }
 
 .cravio-checkbox-custom.checked {
@@ -460,16 +341,9 @@
   color: #121316;
 }
 
-.cravio-checkbox-custom svg {
-  width: 13px;
-  height: 13px;
-  stroke-width: 3;
-}
-
 .cravio-terms-text {
   font-size: 12.5px;
   color: var(--cravio-subtext);
-  line-height: 1.4;
 }
 
 .cravio-terms-link {
@@ -478,69 +352,67 @@
   text-decoration: none;
 }
 
-.cravio-terms-link:hover {
+/* Forgot Password */
+.cravio-forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+}
+
+.cravio-forgot-link {
+  color: var(--cravio-gold);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.cravio-forgot-link:hover {
   text-decoration: underline;
 }
 
-/* Primary Submit Button */
+/* Submit Button */
 .cravio-submit-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   width: 100%;
-  height: 54px;
+  height: 52px;
   border-radius: 9999px;
   background: linear-gradient(90deg, #f7a827 0%, #f39c12 100%);
   color: #121316;
   font-family: var(--cravio-font);
-  font-size: 16px;
+  font-size: 15.5px;
   font-weight: 700;
   border: none;
   cursor: pointer;
-  box-shadow: 
-    0 8px 22px rgba(247, 168, 39, 0.38),
-    inset 0 1px 1px rgba(255, 255, 255, 0.4);
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 22px rgba(247, 168, 39, 0.35);
+  transition: all 0.22s ease;
   margin-top: 4px;
 }
 
 .cravio-submit-btn:hover:not(:disabled) {
   background: linear-gradient(90deg, #ffbc43 0%, #f7a827 100%);
   transform: translateY(-2px);
-  box-shadow: 
-    0 12px 28px rgba(247, 168, 39, 0.5),
-    inset 0 1px 1px rgba(255, 255, 255, 0.5);
-}
-
-.cravio-submit-btn:active:not(:disabled) {
-  transform: translateY(1px);
+  box-shadow: 0 12px 26px rgba(247, 168, 39, 0.45);
 }
 
 .cravio-submit-btn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
-.cravio-submit-btn svg {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.2s ease;
-}
-
-.cravio-submit-btn:hover:not(:disabled) svg {
-  transform: translateX(3px);
-}
-
-/* Divider: or continue with */
+/* Social Login */
 .cravio-social-divider {
   display: flex;
   align-items: center;
   text-align: center;
-  margin: 18px 0 14px 0;
+  margin: 16px 0 12px 0;
   color: #71717a;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 500;
 }
 
@@ -548,198 +420,18 @@
 .cravio-social-divider::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .cravio-social-divider span {
-  padding: 0 12px;
+  padding: 0 10px;
 }
 
-/* Social Buttons Row */
-.cravio-social-row {
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.cravio-social-btn {
-  width: 54px;
-  height: 52px;
-  border-radius: 14px;
-  background: var(--cravio-input-bg);
-  border: 1.5px solid var(--cravio-input-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  padding: 0;
-}
-
-.cravio-social-btn:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  background: #25272e;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-}
-
-.cravio-social-btn svg {
-  width: 22px;
-  height: 22px;
-}
-
-/* Footer: Already have an account? Login */
-.cravio-auth-footer {
-  text-align: center;
-  font-size: 13.5px;
-  color: var(--cravio-subtext);
-  font-weight: 500;
-}
-
-.cravio-auth-footer-link {
-  color: var(--cravio-gold);
-  font-weight: 700;
-  text-decoration: none;
-  margin-left: 4px;
-  transition: color 0.15s ease;
-}
-
-.cravio-auth-footer-link:hover {
-  text-decoration: underline;
-  color: var(--cravio-gold-hover);
-}
-
-/* ==========================================================================
-   LOGIN SCREEN SPECIFIC STYLES
-   ========================================================================== */
-
-/* Login Brand & Header Layout */
-.cravio-login-top-section {
-  position: relative;
-  margin-bottom: 24px;
-  min-height: 180px;
-}
-
-.cravio-login-brand {
-  position: relative;
-  z-index: 4;
-  margin-top: 14px;
-}
-
-.cravio-login-brand-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.cravio-login-brand-icon {
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cravio-login-brand-icon svg {
-  width: 42px;
-  height: 42px;
-}
-
-.cravio-login-brand-name {
-  font-size: 34px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.03em;
-  display: flex;
-  align-items: baseline;
-}
-
-.cravio-login-brand-tagline {
-  margin: 0;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #ffffff;
-  letter-spacing: 0.01em;
-}
-
-.cravio-login-dish-peek {
-  position: absolute;
-  top: -30px;
-  right: -30px;
-  width: 225px;
-  height: 225px;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 
-    -12px 18px 40px rgba(0, 0, 0, 0.7),
-    0 0 0 2px rgba(255, 255, 255, 0.12);
-  z-index: 2;
-  pointer-events: none;
-}
-
-.cravio-login-dish-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-/* Login Headline */
-.cravio-login-heading-section {
-  margin-bottom: 22px;
-  position: relative;
-  z-index: 4;
-}
-
-.cravio-login-heading {
-  margin: 0;
-  font-size: 34px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #ffffff;
-}
-
-.cravio-login-subheading {
-  margin: 10px 0 0 0;
-  font-size: 14.5px;
-  line-height: 1.45;
-  color: var(--cravio-subtext);
-  font-weight: 500;
-}
-
-/* Forgot Password Link */
-.cravio-forgot-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: -4px;
-  margin-bottom: 4px;
-}
-
-.cravio-forgot-link {
-  color: var(--cravio-gold);
-  font-size: 13.5px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 0.15s ease;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.cravio-forgot-link:hover {
-  text-decoration: underline;
-  color: var(--cravio-gold-hover);
-}
-
-/* Wide Social Sign-In Buttons (Google & Apple) */
 .cravio-social-wide-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 22px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .cravio-social-wide-btn {
@@ -747,81 +439,69 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  height: 52px;
-  border-radius: 16px;
+  height: 48px;
+  border-radius: 14px;
   background-color: var(--cravio-input-bg);
   border: 1.5px solid var(--cravio-input-border);
   color: #ffffff;
   font-family: var(--cravio-font);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 0 16px;
 }
 
 .cravio-social-wide-btn:hover {
-  border-color: rgba(255, 255, 255, 0.35);
-  background-color: #24262d;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-}
-
-.cravio-social-wide-btn:active {
-  transform: translateY(1px);
+  border-color: rgba(255, 255, 255, 0.3);
+  background-color: #262830;
+  transform: translateY(-1px);
 }
 
 .cravio-social-wide-btn svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
+  width: 19px;
+  height: 19px;
+}
+
+.cravio-auth-footer {
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--cravio-subtext);
+}
+
+.cravio-auth-footer-link {
+  color: var(--cravio-gold);
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.cravio-auth-footer-link:hover {
+  text-decoration: underline;
 }
 
 /* ==========================================================================
-   RESPONSIVE DESIGN
+   MOBILE RESPONSIVENESS (<= 800px)
    ========================================================================== */
 
-/* Hide decorative background food elements on tablets and smaller */
-@media (max-width: 1080px) {
-  .cravio-auth-decor {
-    display: none;
-  }
-}
-
-/* Mobile Screens (Under 480px) */
-@media (max-width: 480px) {
+@media (max-width: 820px) {
   .cravio-auth-wrapper {
     padding: 0;
-    background-color: #111215;
-    background-image: none;
   }
 
-  .cravio-auth-ribbon,
-  .cravio-auth-decor {
-    display: none;
-  }
-
-  .cravio-auth-phone-container {
+  .cravio-auth-container-wide {
+    grid-template-columns: 1fr;
     max-width: 100%;
     min-height: 100vh;
     border-radius: 0;
-    padding: 22px 18px 24px 18px;
-    box-shadow: none;
     border: none;
+    box-shadow: none;
   }
 
-  .cravio-dish-peek-wrapper {
-    width: 145px;
-    height: 145px;
-    right: -25px;
-    top: -20px;
+  .cravio-auth-showcase-panel {
+    display: none;
   }
 
-  .cravio-auth-title {
-    font-size: 28px;
-  }
-
-  .cravio-submit-btn {
-    height: 52px;
+  .cravio-auth-form-panel {
+    padding: 28px 20px;
   }
 }

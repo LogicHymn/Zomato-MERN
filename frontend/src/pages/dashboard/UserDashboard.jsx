@@ -28,17 +28,121 @@ function UserDashboard() {
   // Navigation & Interactive States
   const [activeTab, setActiveTab] = useState("Home");
   const [dockTab, setDockTab] = useState("Home"); // "Home" | "Under250" | "Dining" | "Healthy"
-  const [activeCategory, setActiveCategory] = useState("Burgers");
+  const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("Prayagraj");
   const [showLocationMenu, setShowLocationMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [favorites, setFavorites] = useState({ 1: true, 4: true });
+  const [favorites, setFavorites] = useState({});
 
-  // Floating Cart State (Biryani Bees - 2 items)
+  // Dynamic Foods added by Partners (NO dummy foods)
+  const [foods, setFoods] = useState([]);
+  const [loadingFoods, setLoadingFoods] = useState(true);
+
+  // Cart & Orders State (Starts Empty - NO dummy order)
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("cravioCart") || "[]");
+    } catch (e) {
+      return [];
+    }
+  });
   const [showCartBar, setShowCartBar] = useState(true);
   const [showCartModal, setShowCartModal] = useState(false);
+
+  // Load Real Foods Added by Food Partners
+  const loadFoods = async () => {
+    let localFoods = [];
+    try {
+      localFoods = JSON.parse(localStorage.getItem("cravioCustomFoods") || "[]");
+    } catch (e) {
+      localFoods = [];
+    }
+
+    try {
+      const res = await axios.get("http://localhost:3000/api/food", { withCredentials: true });
+      if (res.data?.food && Array.isArray(res.data.food)) {
+        const backendFoods = res.data.food.map((f) => ({
+          id: f._id || f.id,
+          name: f.name,
+          cuisine: f.category || "Specialty",
+          price: `₹${f.price} for one`,
+          numericPrice: Number(f.price) || 200,
+          isHealthy: (f.category || "").toLowerCase().includes("salad") || (f.category || "").toLowerCase().includes("healthy"),
+          time: "25 min",
+          rating: f.rating || "4.5",
+          reviews: f.review || "10",
+          restaurantName: f.restaurantName || f.foodPartner?.restaurantName || "Partner Kitchen",
+          img: f.image || saladDishImg,
+          status: f.status || "Available",
+        }));
+
+        const combined = [...backendFoods];
+        localFoods.forEach((lf) => {
+          if (!combined.some((cf) => cf.id === lf.id || cf.name === lf.name)) {
+            combined.push({
+              id: lf.id,
+              name: lf.name,
+              cuisine: lf.category || "Specialty",
+              price: `₹${lf.price} for one`,
+              numericPrice: Number(lf.price) || 200,
+              isHealthy: (lf.category || "").toLowerCase().includes("salad") || (lf.category || "").toLowerCase().includes("healthy"),
+              time: "25 min",
+              rating: "4.8",
+              reviews: "1",
+              restaurantName: lf.restaurantName || "Partner Kitchen",
+              img: lf.img || saladDishImg,
+              status: lf.status || "Available",
+            });
+          }
+        });
+
+        setFoods(combined);
+        setLoadingFoods(false);
+        return;
+      }
+    } catch (err) {
+      console.warn("Could not fetch backend foods:", err.message);
+    }
+
+    // Map local foods if backend isn't reachable
+    const formattedLocal = localFoods.map((lf) => ({
+      id: lf.id,
+      name: lf.name,
+      cuisine: lf.category || "Specialty",
+      price: `₹${lf.price} for one`,
+      numericPrice: Number(lf.price) || 200,
+      isHealthy: (lf.category || "").toLowerCase().includes("salad") || (lf.category || "").toLowerCase().includes("healthy"),
+      time: "25 min",
+      rating: "4.8",
+      reviews: "1",
+      restaurantName: lf.restaurantName || "Partner Kitchen",
+      img: lf.img || saladDishImg,
+      status: lf.status || "Available",
+    }));
+
+    setFoods(formattedLocal);
+    setLoadingFoods(false);
+  };
+
+  useEffect(() => {
+    loadFoods();
+
+    const handleSync = () => loadFoods();
+    window.addEventListener("cravio-foods-updated", handleSync);
+    window.addEventListener("storage", handleSync);
+
+    return () => {
+      window.removeEventListener("cravio-foods-updated", handleSync);
+      window.removeEventListener("storage", handleSync);
+    };
+  }, []);
+
+  // Save Cart to localStorage
+  useEffect(() => {
+    localStorage.setItem("cravioCart", JSON.stringify(cartItems));
+  }, [cartItems]);
 
   if (activeTab === "Orders") {
     return <UserOrders onTabChange={setActiveTab} />;
@@ -66,14 +170,88 @@ function UserDashboard() {
     }));
   };
 
+  // Add Item to Cart
+  const handleAddToCart = (dish, e) => {
+    e.stopPropagation();
+    const existing = cartItems.find((item) => item.id === dish.id);
+    let updatedCart;
+    if (existing) {
+      updatedCart = cartItems.map((item) =>
+        item.id === dish.id ? { ...item, qty: item.qty + 1 } : item
+      );
+    } else {
+      updatedCart = [
+        ...cartItems,
+        {
+          id: dish.id,
+          name: dish.name,
+          price: dish.numericPrice || 199,
+          restaurantName: dish.restaurantName || "Partner Kitchen",
+          img: dish.img,
+          qty: 1,
+        },
+      ];
+    }
+    setCartItems(updatedCart);
+    setShowCartBar(true);
+  };
+
+  // Place Real Order
+  const handlePlaceOrder = () => {
+    if (cartItems.length === 0) return;
+
+    const newOrder = {
+      id: "CRV" + Math.floor(10000 + Math.random() * 90000),
+      restaurantName: cartItems[0].restaurantName || "Partner Kitchen",
+      items: cartItems.map((c) => `${c.name} (x${c.qty})`).join(", "),
+      itemCount: cartItems.reduce((acc, curr) => acc + curr.qty, 0),
+      totalPrice: cartItems.reduce((acc, curr) => acc + curr.price * curr.qty, 0) + 28,
+      status: "In kitchen",
+      step: 2,
+      time: "20–25 min",
+      date: new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + " • " + new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }),
+      img: cartItems[0].img || burgerImg,
+    };
+
+    let existingOrders = [];
+    try {
+      existingOrders = JSON.parse(localStorage.getItem("cravioOrders") || "[]");
+    } catch (e) {
+      existingOrders = [];
+    }
+
+    const updatedOrders = [newOrder, ...existingOrders];
+    localStorage.setItem("cravioOrders", JSON.stringify(updatedOrders));
+
+    // Clear cart
+    setCartItems([]);
+    setShowCartModal(false);
+    setShowCartBar(false);
+    alert(`Order #${newOrder.id} placed successfully with ${newOrder.restaurantName}!`);
+    setActiveTab("Orders");
+  };
+
+  // Recent order for Profile Preview
+  const getLatestOrder = () => {
+    try {
+      const savedOrders = JSON.parse(localStorage.getItem("cravioOrders") || "[]");
+      return savedOrders[0] || null;
+    } catch (e) {
+      return null;
+    }
+  };
+  const latestOrder = getLatestOrder();
+
   const categories = [
+    { id: "All", name: "All", icon: "✨" },
     { id: "Pizza", name: "Pizza", icon: "🍕" },
     { id: "Burgers", name: "Burgers", icon: "🍔" },
+    { id: "Pasta", name: "Pasta", icon: "🍝" },
+    { id: "Momos", name: "Momos", icon: "🥟" },
     { id: "Chinese", name: "Chinese", icon: "🍜" },
     { id: "North Indian", name: "North Indian", icon: "🍗" },
     { id: "Desserts", name: "Desserts", icon: "🍰" },
     { id: "Beverages", name: "Beverages", icon: "🍹" },
-    { id: "More", name: "More", icon: "🎛️" },
   ];
 
   const foodReels = [
@@ -107,88 +285,18 @@ function UserDashboard() {
     },
   ];
 
-  const allRestaurants = [
-    {
-      id: 1,
-      name: "The Food Junction",
-      rating: "4.5",
-      reviews: "1.2K",
-      cuisine: "North Indian",
-      price: "₹200 for one",
-      numericPrice: 200,
-      isHealthy: false,
-      time: "25 min",
-      img: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=600&q=80",
-    },
-    {
-      id: 2,
-      name: "Burger Barn",
-      rating: "4.3",
-      reviews: "892",
-      cuisine: "Burgers",
-      price: "₹240 for one",
-      numericPrice: 240,
-      isHealthy: false,
-      time: "30 min",
-      img: burgerImg,
-    },
-    {
-      id: 3,
-      name: "Green Goddess Bowls",
-      rating: "4.8",
-      reviews: "540",
-      cuisine: "Healthy • Salads & Bowls",
-      price: "₹220 for one",
-      numericPrice: 220,
-      isHealthy: true,
-      time: "20 min",
-      img: saladDishImg,
-    },
-    {
-      id: 4,
-      name: "Pasta Palace",
-      rating: "4.6",
-      reviews: "640",
-      cuisine: "Italian",
-      price: "₹300 for one",
-      numericPrice: 300,
-      isHealthy: false,
-      time: "20 min",
-      img: "https://images.unsplash.com/photo-1621996346565-e3d5d6281696?auto=format&fit=crop&w=600&q=80",
-    },
-    {
-      id: 5,
-      name: "Biryani Bees",
-      rating: "4.7",
-      reviews: "2.1K",
-      cuisine: "Biryani • Mughlai",
-      price: "₹250 for one",
-      numericPrice: 250,
-      isHealthy: false,
-      time: "35 min",
-      img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80",
-    },
-    {
-      id: 6,
-      name: "Pure Health Kitchen",
-      rating: "4.9",
-      reviews: "410",
-      cuisine: "Healthy • Vegan • Smoothies",
-      price: "₹210 for one",
-      numericPrice: 210,
-      isHealthy: true,
-      time: "25 min",
-      img: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
-    },
-  ];
-
-  // Filter restaurants based on Search Query & Footer Dock selection
-  const filteredRestaurants = allRestaurants.filter((res) => {
+  // Filter foods dynamically based on category, search, and footer dock
+  const filteredFoods = foods.filter((res) => {
     const matchesSearch =
       res.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      res.cuisine.toLowerCase().includes(searchQuery.toLowerCase());
+      res.cuisine.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      res.restaurantName.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (!matchesSearch) return false;
+
+    if (activeCategory !== "All" && !res.cuisine.toLowerCase().includes(activeCategory.toLowerCase())) {
+      return false;
+    }
 
     if (dockTab === "Under250") {
       return res.numericPrice <= 250;
@@ -198,6 +306,10 @@ function UserDashboard() {
     }
     return true;
   });
+
+  const cartSubtotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const cartTotal = cartSubtotal > 0 ? cartSubtotal + 28 : 0;
+  const primaryCartRestaurant = cartItems[0]?.restaurantName || "Partner Kitchen";
 
   return (
     <div className="cravio-dash-wrapper">
@@ -273,7 +385,7 @@ function UserDashboard() {
             <input
               type="text"
               className="cravio-search-input"
-              placeholder="Search dishes, restaurants or cuisines..."
+              placeholder="Search dishes or cuisines added by partners..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -319,14 +431,14 @@ function UserDashboard() {
             <button
               type="button"
               className="cravio-bell-btn"
-              onClick={() => alert("You have 1 active delivery arriving soon from Burger Barn!")}
+              onClick={() => alert(latestOrder ? `Your order from ${latestOrder.restaurantName} is: ${latestOrder.status}` : "No new notifications")}
               aria-label="Notifications"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
-              <span className="cravio-bell-badge" aria-hidden="true"></span>
+              {latestOrder && <span className="cravio-bell-badge" aria-hidden="true"></span>}
             </button>
 
             {/* Avatar with Dropdown */}
@@ -359,7 +471,7 @@ function UserDashboard() {
                     </div>
                   </div>
 
-                  {/* 1. Appearance Option (Switch Between Dark / Light Mode) */}
+                  {/* 1. Appearance Option */}
                   <div className="cravio-appearance-box">
                     <div className="cravio-appearance-label">
                       <span>Appearance</span>
@@ -422,20 +534,27 @@ function UserDashboard() {
                         View All ›
                       </button>
                     </div>
-                    <div
-                      className="cravio-profile-order-preview"
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        setActiveTab("Orders");
-                      }}
-                      title="View tracking for Burger Barn"
-                    >
-                      <img src={burgerImg} alt="Burger Barn Order" className="cravio-profile-order-img" />
-                      <div className="cravio-profile-order-meta">
-                        <h5>Burger Barn (1 item)</h5>
-                        <span>● In kitchen • 18 mins</span>
+
+                    {latestOrder ? (
+                      <div
+                        className="cravio-profile-order-preview"
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          setActiveTab("Orders");
+                        }}
+                        title={`View tracking for ${latestOrder.restaurantName}`}
+                      >
+                        <img src={latestOrder.img || burgerImg} alt="Order" className="cravio-profile-order-img" />
+                        <div className="cravio-profile-order-meta">
+                          <h5>{latestOrder.restaurantName}</h5>
+                          <span>● {latestOrder.status} • {latestOrder.time || "Arriving soon"}</span>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <p style={{ margin: "6px 0 0 0", fontSize: "12px", color: "var(--cravio-subtext)" }}>
+                        No orders placed yet.
+                      </p>
+                    )}
                   </div>
 
                   {/* Profile Details & Logout */}
@@ -500,7 +619,7 @@ function UserDashboard() {
               <p className="cravio-greeting-sub">What are you craving today?</p>
             </div>
 
-            {/* Current Active Filter Badge if selected from dock */}
+            {/* Current Active Filter Badge */}
             {dockTab !== "Home" && (
               <div style={{
                 display: "inline-flex",
@@ -536,7 +655,7 @@ function UserDashboard() {
               {dockTab === "Healthy" ? "Clean Eating 40% OFF" : "Get 50% OFF"}
             </h2>
             <p className="cravio-offer-sub">
-              {dockTab === "Healthy" ? "Nutritious gourmet bowls & fresh salads" : "on your favorite meals with Cravio"}
+              {dockTab === "Healthy" ? "Nutritious gourmet bowls & fresh salads" : "on fresh dishes prepared by our verified partners"}
             </p>
             <button
               type="button"
@@ -548,7 +667,7 @@ function UserDashboard() {
           </div>
           <div className="cravio-offer-media">
             <img
-              src={dockTab === "Healthy" ? saladDishImg : burgerImg}
+              src={saladDishImg}
               alt="Promotional Dish"
               className="cravio-offer-img"
             />
@@ -565,7 +684,7 @@ function UserDashboard() {
                 className="cravio-category-item"
                 onClick={() => {
                   setActiveCategory(cat.id);
-                  setSearchQuery(cat.name === "More" ? "" : cat.name);
+                  setSearchQuery(cat.id === "All" ? "" : cat.name);
                 }}
               >
                 <div className={`cravio-category-circle ${activeCategory === cat.id ? "active" : ""}`}>
@@ -620,79 +739,138 @@ function UserDashboard() {
           </div>
         </section>
 
-        {/* Recommended for you Section */}
+        {/* Partner Dishes Section (Dynamic from Food Partners) */}
         <section>
           <div className="cravio-section-header">
-            <h3 className="cravio-section-title">
-              {dockTab === "Under250" ? "Dishes Under ₹250" : dockTab === "Healthy" ? "Healthy & Diet Kitchens" : "Recommended for you"}
-            </h3>
+            <div>
+              <h3 className="cravio-section-title">
+                {dockTab === "Under250" ? "Dishes Under ₹250" : dockTab === "Healthy" ? "Healthy & Diet Bowls" : "Available From Food Partners"}
+              </h3>
+              <p style={{ margin: "2px 0 0 0", fontSize: "13px", color: "var(--cravio-subtext)" }}>
+                {filteredFoods.length} {filteredFoods.length === 1 ? "dish" : "dishes"} available
+              </p>
+            </div>
+
             <button
               type="button"
               className="cravio-see-all-btn"
               onClick={() => {
                 setDockTab("Home");
+                setActiveCategory("All");
                 setSearchQuery("");
               }}
             >
-              <span>{dockTab !== "Home" ? "Reset Filters" : "See All"}</span>
+              <span>{dockTab !== "Home" || activeCategory !== "All" ? "Reset Filters" : "Refresh"}</span>
               <span>›</span>
             </button>
           </div>
 
-          {filteredRestaurants.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--cravio-subtext)" }}>
-              <p style={{ fontSize: "16px", fontWeight: 600 }}>No restaurants match this filter.</p>
-              <button
-                type="button"
+          {loadingFoods ? (
+            <div style={{ textAlign: "center", padding: "50px 20px", color: "var(--cravio-subtext)" }}>
+              Loading partner food items...
+            </div>
+          ) : filteredFoods.length === 0 ? (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "60px 24px",
+                background: "rgba(255, 255, 255, 0.02)",
+                borderRadius: "24px",
+                border: "1.5px dashed rgba(255, 255, 255, 0.1)",
+              }}
+            >
+              <div style={{ fontSize: "44px", marginBottom: "14px" }}>👨‍🍳</div>
+              <h4 style={{ fontSize: "18px", fontWeight: 700, margin: "0 0 8px 0", color: "#ffffff" }}>
+                {searchQuery || activeCategory !== "All" ? "No dishes match this filter" : "No Food Items Added Yet"}
+              </h4>
+              <p style={{ fontSize: "13.5px", color: "var(--cravio-subtext)", margin: "0 0 20px 0", maxWidth: "420px", marginInline: "auto", lineHeight: "1.5" }}>
+                {searchQuery || activeCategory !== "All"
+                  ? "Try resetting filters or searching for another cuisine."
+                  : "Food partners can add dishes from the Partner Portal. Once added, delicious meals will immediately appear here!"}
+              </p>
+              <Link
+                to="/partner/login"
                 className="cravio-offer-btn"
-                style={{ marginTop: "12px", display: "inline-block" }}
-                onClick={() => {
-                  setDockTab("Home");
-                  setSearchQuery("");
-                }}
+                style={{ display: "inline-flex", textDecoration: "none", alignItems: "center", gap: "8px" }}
               >
-                View All Places
-              </button>
+                <span>Go to Partner Portal</span>
+                <span>➔</span>
+              </Link>
             </div>
           ) : (
             <div className="cravio-recommended-grid">
-              {filteredRestaurants.map((res) => (
+              {filteredFoods.map((dish) => (
                 <div
-                  key={res.id}
+                  key={dish.id}
                   className="cravio-restaurant-card"
-                  onClick={() => alert(`Opening menu for ${res.name}`)}
+                  onClick={() => alert(`Selected ${dish.name} from ${dish.restaurantName}`)}
                 >
                   <div className="cravio-restaurant-media">
-                    <img src={res.img} alt={res.name} className="cravio-restaurant-img" />
+                    <img src={dish.img} alt={dish.name} className="cravio-restaurant-img" />
 
                     <div className="cravio-time-badge">
                       <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
                       </svg>
-                      <span>{res.time}</span>
+                      <span>{dish.time}</span>
                     </div>
 
                     <button
                       type="button"
-                      className={`cravio-card-heart-btn ${favorites[res.id] ? "active" : ""}`}
-                      onClick={(e) => toggleFavorite(res.id, e)}
+                      className={`cravio-card-heart-btn ${favorites[dish.id] ? "active" : ""}`}
+                      onClick={(e) => toggleFavorite(dish.id, e)}
                       aria-label="Add to favorites"
                     >
-                      <svg viewBox="0 0 24 24" fill={favorites[res.id] ? "#EF4444" : "none"} stroke="currentColor" strokeWidth="2">
+                      <svg viewBox="0 0 24 24" fill={favorites[dish.id] ? "#EF4444" : "none"} stroke="currentColor" strokeWidth="2">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                       </svg>
                     </button>
                   </div>
 
                   <div className="cravio-restaurant-body">
-                    <h4 className="cravio-restaurant-name">{res.name}</h4>
-                    <div className="cravio-restaurant-meta">
-                      <span className="cravio-rating-star">★ {res.rating}</span>
-                      <span>({res.reviews})</span>
-                      <span>•</span>
-                      <span>{res.cuisine}</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
+                      <div>
+                        <h4 className="cravio-restaurant-name" style={{ marginBottom: "2px" }}>{dish.name}</h4>
+                        <span style={{ fontSize: "12px", color: "var(--cravio-gold)", fontWeight: 700 }}>
+                          by {dish.restaurantName}
+                        </span>
+                      </div>
+                      <span className="cravio-restaurant-price" style={{ fontSize: "15px", fontWeight: 800 }}>
+                        ₹{dish.numericPrice}
+                      </span>
                     </div>
-                    <div className="cravio-restaurant-price">{res.price}</div>
+
+                    <div className="cravio-restaurant-meta" style={{ marginTop: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span className="cravio-rating-star">★ {dish.rating}</span>
+                        <span>•</span>
+                        <span>{dish.cuisine}</span>
+                      </div>
+
+                      {/* Add to Cart Button */}
+                      <button
+                        type="button"
+                        onClick={(e) => handleAddToCart(dish, e)}
+                        style={{
+                          background: "var(--cravio-gold)",
+                          color: "#121316",
+                          border: "none",
+                          padding: "6px 14px",
+                          borderRadius: "9999px",
+                          fontSize: "12px",
+                          fontWeight: 800,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          transition: "transform 0.15s ease",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                      >
+                        <span>+ Add</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -702,25 +880,25 @@ function UserDashboard() {
       </main>
 
       {/* ==========================================================================
-          3. FLOATING CART PILL (EXACTLY MATCHING USER SCREENSHOT)
+          3. REAL FLOATING CART PILL (Appears ONLY when cart has items)
           ========================================================================== */}
-      {showCartBar && (
+      {cartItems.length > 0 && showCartBar && (
         <div className="cravio-floating-cart-bar" role="region" aria-label="Cart summary">
           <div className="cravio-floating-cart-left">
             <img
-              src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=120&q=80"
-              alt="Biryani Bees Dish"
+              src={cartItems[0]?.img || saladDishImg}
+              alt="Cart Item"
               className="cravio-floating-cart-img"
             />
             <div className="cravio-floating-cart-info">
-              <h4>Biryani Bees</h4>
+              <h4>{primaryCartRestaurant}</h4>
               <button
                 type="button"
                 className="cravio-floating-cart-link"
                 style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "inherit" }}
-                onClick={() => alert("Opening Biryani Bees delicious biryani & kebab menu...")}
+                onClick={() => setShowCartModal(true)}
               >
-                <span>View Menu</span>
+                <span>View Cart Items</span>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5v14l11-7z" />
                 </svg>
@@ -733,10 +911,10 @@ function UserDashboard() {
               type="button"
               className="cravio-cart-view-btn"
               onClick={() => setShowCartModal(true)}
-              aria-label="View Cart (2 items)"
+              aria-label={`View Cart (${cartItems.length} items)`}
             >
               <strong>View Cart</strong>
-              <span>2 items</span>
+              <span>{cartItems.length} {cartItems.length === 1 ? "item" : "items"}</span>
             </button>
 
             <button
@@ -744,7 +922,7 @@ function UserDashboard() {
               className="cravio-cart-dismiss-btn"
               onClick={() => setShowCartBar(false)}
               aria-label="Dismiss Cart Pill"
-              title="Hide cart"
+              title="Hide cart bar"
             >
               ✕
             </button>
@@ -753,7 +931,7 @@ function UserDashboard() {
       )}
 
       {/* ==========================================================================
-          4. CUSTOM BOTTOM NAVIGATION DOCK (EXACTLY MATCHING USER SCREENSHOT)
+          4. CUSTOM BOTTOM NAVIGATION DOCK
           ========================================================================== */}
       <nav className="cravio-custom-bottom-dock" aria-label="Bottom Navigation">
         {/* 1. Home Button (Red/Burgundy Pill Capsule) */}
@@ -794,7 +972,7 @@ function UserDashboard() {
               setDockTab("Home");
             } else {
               setDockTab("Dining");
-              alert("Showing premier Dine-In table reservations & exclusive restaurant lounges in " + selectedCity);
+              alert("Showing premier Dine-In table reservations in " + selectedCity);
             }
           }}
           style={{ color: dockTab === "Dining" ? "var(--cravio-gold)" : undefined }}
@@ -821,7 +999,7 @@ function UserDashboard() {
       </nav>
 
       {/* ==========================================================================
-          5. INTERACTIVE CART MODAL (OPENED VIA "VIEW CART" BUTTON)
+          5. REAL CART CHECKOUT MODAL
           ========================================================================== */}
       {showCartModal && (
         <div className="cravio-cart-modal" onClick={() => setShowCartModal(false)}>
@@ -832,8 +1010,10 @@ function UserDashboard() {
                   🛍️
                 </div>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: "17px", fontWeight: 800 }}>Biryani Bees Cart</h3>
-                  <span style={{ fontSize: "12px", color: "var(--cravio-subtext)" }}>2 items ready for checkout</span>
+                  <h3 style={{ margin: 0, fontSize: "17px", fontWeight: 800 }}>{primaryCartRestaurant}</h3>
+                  <span style={{ fontSize: "12px", color: "var(--cravio-subtext)" }}>
+                    {cartItems.length} {cartItems.length === 1 ? "item" : "items"} in cart
+                  </span>
                 </div>
               </div>
               <button
@@ -846,68 +1026,63 @@ function UserDashboard() {
             </div>
 
             {/* Cart Items List */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "rgba(255,255,255,0.03)", borderRadius: "12px" }}>
-                <div>
-                  <strong style={{ fontSize: "14px", display: "block" }}>Handi Chicken Dum Biryani</strong>
-                  <span style={{ fontSize: "12px", color: "var(--cravio-subtext)" }}>1 portion • Medium Spicy</span>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <span style={{ fontSize: "14px", fontWeight: 700 }}>₹349</span>
-                </div>
+            {cartItems.length === 0 ? (
+              <p style={{ textAlign: "center", color: "var(--cravio-subtext)", padding: "20px 0" }}>Your cart is empty.</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px", maxHeight: "240px", overflowY: "auto" }}>
+                {cartItems.map((item) => (
+                  <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "rgba(255,255,255,0.03)", borderRadius: "12px" }}>
+                    <div>
+                      <strong style={{ fontSize: "14px", display: "block" }}>{item.name}</strong>
+                      <span style={{ fontSize: "12px", color: "var(--cravio-subtext)" }}>Qty: {item.qty} • ₹{item.price} each</span>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <span style={{ fontSize: "14px", fontWeight: 700 }}>₹{item.price * item.qty}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "rgba(255,255,255,0.03)", borderRadius: "12px" }}>
-                <div>
-                  <strong style={{ fontSize: "14px", display: "block" }}>Garlic Butter Naan (2 pcs)</strong>
-                  <span style={{ fontSize: "12px", color: "var(--cravio-subtext)" }}>Freshly baked tandoori</span>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <span style={{ fontSize: "14px", fontWeight: 700 }}>₹120</span>
-                </div>
-              </div>
-            </div>
+            )}
 
             {/* Bill Summary */}
-            <div style={{ borderTop: "1px dashed var(--cravio-border)", paddingTop: "14px", marginBottom: "20px", display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", color: "var(--cravio-subtext)" }}>
-                <span>Item Subtotal</span>
-                <span>₹469</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", color: "var(--cravio-subtext)" }}>
-                <span>Delivery Partner Fee</span>
-                <span style={{ color: "#10b981", fontWeight: 600 }}>FREE</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", color: "var(--cravio-subtext)" }}>
-                <span>Taxes & Restaurant Charges</span>
-                <span>₹28</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "16px", fontWeight: 800, marginTop: "8px", paddingTop: "8px", borderTop: "1px solid var(--cravio-border)" }}>
-                <span>To Pay</span>
-                <span style={{ color: "var(--cravio-gold)" }}>₹497</span>
-              </div>
-            </div>
+            {cartItems.length > 0 && (
+              <>
+                <div style={{ borderTop: "1px dashed var(--cravio-border)", paddingTop: "14px", marginBottom: "20px", display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--cravio-subtext)" }}>
+                    <span>Item Subtotal</span>
+                    <span>₹{cartSubtotal}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--cravio-subtext)" }}>
+                    <span>Delivery Partner Fee</span>
+                    <span style={{ color: "#10b981", fontWeight: 600 }}>FREE</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--cravio-subtext)" }}>
+                    <span>Taxes & Restaurant Charges</span>
+                    <span>₹28</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "16px", fontWeight: 800, marginTop: "8px", paddingTop: "8px", borderTop: "1px solid var(--cravio-border)" }}>
+                    <span>To Pay</span>
+                    <span style={{ color: "var(--cravio-gold)" }}>₹{cartTotal}</span>
+                  </div>
+                </div>
 
-            {/* Checkout Button */}
-            <button
-              type="button"
-              className="cravio-offer-btn"
-              style={{ width: "100%", justifyContent: "center", padding: "14px", fontSize: "15px", borderRadius: "14px" }}
-              onClick={() => {
-                setShowCartModal(false);
-                setShowCartBar(false);
-                alert("Order placed successfully with Biryani Bees! Tracking delivery.");
-                setActiveTab("Orders");
-              }}
-            >
-              Place Order • ₹497 ›
-            </button>
+                {/* Checkout Button */}
+                <button
+                  type="button"
+                  className="cravio-offer-btn"
+                  style={{ width: "100%", justifyContent: "center", padding: "14px", fontSize: "15px", borderRadius: "14px" }}
+                  onClick={handlePlaceOrder}
+                >
+                  Place Order • ₹{cartTotal} ›
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
 
       {/* ==========================================================================
-          6. PROFILE MODAL (FULL SETTINGS, APPEARANCE & MY ORDERS)
+          6. PROFILE MODAL
           ========================================================================== */}
       {showProfileModal && (
         <div className="cravio-profile-modal" onClick={() => setShowProfileModal(false)}>
@@ -969,6 +1144,10 @@ function UserDashboard() {
                     <line x1="12" y1="21" x2="12" y2="23" />
                     <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
                     <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" />
+                    <line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                   </svg>
                   Light Mode
                 </button>
@@ -998,20 +1177,24 @@ function UserDashboard() {
                 </button>
               </div>
 
-              <div
-                className="cravio-profile-order-preview"
-                onClick={() => {
-                  setShowProfileModal(false);
-                  setActiveTab("Orders");
-                }}
-              >
-                <img src={burgerImg} alt="Burger Barn Order" className="cravio-profile-order-img" />
-                <div className="cravio-profile-order-meta" style={{ flex: 1 }}>
-                  <h5>Burger Barn</h5>
-                  <span style={{ color: "#10b981", fontWeight: 600 }}>● In Kitchen • 18 mins</span>
-                  <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "var(--cravio-subtext)" }}>1x Classic Smash Bacon Burger</p>
+              {latestOrder ? (
+                <div
+                  className="cravio-profile-order-preview"
+                  onClick={() => {
+                    setShowProfileModal(false);
+                    setActiveTab("Orders");
+                  }}
+                >
+                  <img src={latestOrder.img || burgerImg} alt="Order" className="cravio-profile-order-img" />
+                  <div className="cravio-profile-order-meta" style={{ flex: 1 }}>
+                    <h5>{latestOrder.restaurantName}</h5>
+                    <span style={{ color: "#10b981", fontWeight: 600 }}>● {latestOrder.status} • {latestOrder.time || "Arriving soon"}</span>
+                    <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "var(--cravio-subtext)" }}>{latestOrder.items}</p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <p style={{ fontSize: "12px", color: "var(--cravio-subtext)", margin: "4px 0" }}>No orders placed yet.</p>
+              )}
             </div>
 
             {/* Saved Delivery Addresses */}
@@ -1023,7 +1206,7 @@ function UserDashboard() {
                 <span>📍</span>
                 <div>
                   <strong>Home</strong>
-                  <p style={{ margin: 0, fontSize: "11px", color: "var(--cravio-subtext)" }}>Flat 402, Ganga Heights, Civil Lines, Prayagraj</p>
+                  <p style={{ margin: 0, fontSize: "11px", color: "var(--cravio-subtext)" }}>Civil Lines, Prayagraj, UP</p>
                 </div>
               </div>
             </div>

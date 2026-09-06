@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/cravio_orders.css";
 
@@ -10,55 +10,30 @@ function UserOrders({ onTabChange }) {
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeTrackingOrder, setActiveTrackingOrder] = useState(null);
 
-  const ongoingOrders = [
-    {
-      id: "CRV10245",
-      name: "Ramen Bowl",
-      status: "Out for delivery",
-      statusCode: "out",
-      estimate: "20–25 min",
-      itemsCount: 3,
-      price: "₹528",
-      step: 3, // 1: Confirmed, 2: Preparing, 3: Out for delivery, 4: Delivered
-      img: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80",
-      driver: "Ramesh Kumar (Hero Splendor)",
-      phone: "+91 98765 43210",
-    },
-    {
-      id: "CRV10221",
-      name: "Burger Singh",
-      status: "Preparing",
-      statusCode: "prep",
-      estimate: "35–40 min",
-      itemsCount: 2,
-      price: "₹349",
-      step: 2,
-      img: burgerImg,
-      driver: "Assigning delivery executive...",
-      phone: "Will update soon",
-    },
-  ];
+  // Dynamic Orders from Real Placed Orders (Starts with 0 dummy orders)
+  const [orders, setOrders] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("cravioOrders") || "[]");
+    } catch (e) {
+      return [];
+    }
+  });
 
-  const completedOrders = [
-    {
-      id: "CRV10190",
-      name: "La Pino'z Pizza",
-      date: "12 May 2024 • 08:15 PM",
-      status: "Delivered",
-      price: "₹648",
-      rating: 5,
-      img: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=500&q=80",
-    },
-    {
-      id: "CRV10178",
-      name: "Biryani By Kilo",
-      date: "09 May 2024 • 01:20 PM",
-      status: "Delivered",
-      price: "₹428",
-      rating: 5,
-      img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=500&q=80",
-    },
-  ];
+  const loadOrders = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("cravioOrders") || "[]");
+      setOrders(saved);
+    } catch (e) {
+      setOrders([]);
+    }
+  };
+
+  useEffect(() => {
+    loadOrders();
+    const handleStorage = () => loadOrders();
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const handleNavClick = (tab) => {
     if (onTabChange) {
@@ -69,6 +44,38 @@ function UserOrders({ onTabChange }) {
       if (tab === "Orders") navigate("/user/orders");
     }
   };
+
+  // Process Real Orders into Ongoing vs Completed
+  const ongoingOrders = orders
+    .filter((o) => o.status !== "Delivered" && o.status !== "Cancelled")
+    .map((o) => ({
+      id: o.id || "CRV" + Math.floor(10000 + Math.random() * 90000),
+      name: o.restaurantName || o.name || "Partner Kitchen",
+      items: o.items || "Order items",
+      status: o.status || "Preparing",
+      statusCode: o.step === 3 ? "out" : "prep",
+      estimate: o.time || o.estimate || "20–25 min",
+      itemsCount: o.itemCount || o.itemsCount || 1,
+      price: typeof o.totalPrice === "number" ? `₹${o.totalPrice}` : (o.price || "₹199"),
+      step: o.step || 2,
+      img: o.img || burgerImg,
+      driver: o.driver || "Partner Delivery Fleet (Assigned)",
+      phone: o.phone || "+91 98765 43210",
+      date: o.date || "Today",
+    }));
+
+  const completedOrders = orders
+    .filter((o) => o.status === "Delivered")
+    .map((o) => ({
+      id: o.id || "CRV" + Math.floor(10000 + Math.random() * 90000),
+      name: o.restaurantName || o.name || "Partner Kitchen",
+      items: o.items || "Order items",
+      date: o.date || "Recently",
+      status: "Delivered",
+      price: typeof o.totalPrice === "number" ? `₹${o.totalPrice}` : (o.price || "₹199"),
+      rating: 5,
+      img: o.img || burgerImg,
+    }));
 
   const filteredOngoing = activeFilter === "All" || activeFilter === "Ongoing" ? ongoingOrders : [];
   const filteredCompleted = activeFilter === "All" || activeFilter === "Completed" ? completedOrders : [];
@@ -81,7 +88,7 @@ function UserOrders({ onTabChange }) {
           <Link to="/" className="cravio-web-brand">
             <div className="cravio-web-brand-logo">
               <svg viewBox="0 0 36 36" fill="none">
-                <circle cx="18" cy="18" r="17" fill="#F7A827" />
+                <circle cx="18" r="17" fill="#F7A827" />
                 <path
                   d="M13.5 9V17C13.5 19.5 15.5 21 17 21.5V27.5C17 28.05 17.45 28.5 18 28.5C18.55 28.5 19 28.05 19 27.5V21.5C20.5 21 22.5 19.5 22.5 17V9"
                   stroke="#15161A"
@@ -146,14 +153,22 @@ function UserOrders({ onTabChange }) {
             <button
               type="button"
               className="cravio-icon-circle-btn"
-              onClick={() => alert("You have 2 active orders en route!")}
+              onClick={() => {
+                if (ongoingOrders.length > 0) {
+                  alert(`You have ${ongoingOrders.length} active order(s) en route!`);
+                } else {
+                  alert("No active deliveries at the moment.");
+                }
+              }}
               aria-label="Order notifications"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
-              <span className="cravio-icon-badge-dot" aria-hidden="true"></span>
+              {ongoingOrders.length > 0 && (
+                <span className="cravio-icon-badge-dot" aria-hidden="true"></span>
+              )}
             </button>
           </div>
         </header>
@@ -185,7 +200,9 @@ function UserOrders({ onTabChange }) {
               <path d="M12 17.5V14H6.5" />
             </svg>
             <span>Ongoing</span>
-            <span className="cravio-tab-count-badge">2</span>
+            {ongoingOrders.length > 0 && (
+              <span className="cravio-tab-count-badge">{ongoingOrders.length}</span>
+            )}
           </button>
 
           {/* Completed */}
@@ -215,6 +232,28 @@ function UserOrders({ onTabChange }) {
           </button>
         </div>
 
+        {/* Clean Empty State when no orders exist */}
+        {filteredOngoing.length === 0 && filteredCompleted.length === 0 && (
+          <div className="cravio-orders-empty-state">
+            <div className="cravio-orders-empty-icon">🛍️</div>
+            <h3 className="cravio-orders-empty-title">
+              {activeFilter === "All" ? "No Orders Placed Yet" : `No ${activeFilter} Orders`}
+            </h3>
+            <p className="cravio-orders-empty-desc">
+              {activeFilter === "All"
+                ? "You haven't ordered any food yet. Browse fresh dishes prepared by our verified food partners and order your favourites!"
+                : `You don't have any orders categorized as "${activeFilter}".`}
+            </p>
+            <button
+              type="button"
+              className="cravio-orders-empty-btn"
+              onClick={() => handleNavClick("Home")}
+            >
+              Explore Partner Dishes
+            </button>
+          </div>
+        )}
+
         {/* SECTION 1: Ongoing Orders */}
         {filteredOngoing.length > 0 && (
           <section style={{ marginBottom: "36px" }}>
@@ -232,6 +271,7 @@ function UserOrders({ onTabChange }) {
             </div>
 
             <div className="cravio-ongoing-grid">
+
               {filteredOngoing.map((order) => (
                 <div key={order.id} className="cravio-ongoing-card">
                   {/* Card Top Information */}

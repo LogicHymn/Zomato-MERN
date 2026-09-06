@@ -73,30 +73,27 @@ function PartnerRegister() {
       );
 
       if (response.status === 201 || response.status === 200) {
-        const partnerData = response.data.foodPartner || {
-          name: ownerName,
-          restaurantName,
-          email,
-          phone,
-          address,
-        };
-        localStorage.setItem("cravioPartner", JSON.stringify(partnerData));
-        navigate("/partner/dashboard");
+        localStorage.setItem("cravioPendingEmail", email.trim().toLowerCase());
+        navigate("/partner/verify-otp", {
+          state: {
+            email: email.trim().toLowerCase(),
+            role: "partner",
+            restaurantName,
+          },
+        });
       }
     } catch (err) {
       console.warn("API register attempt:", err);
       // Fallback for seamless local testing if backend food partner table isn't seeded
       if (!err.response || err.response.status >= 500 || err.code === "ERR_NETWORK") {
-        const fallbackPartner = {
-          name: ownerName,
-          restaurantName,
-          email,
-          phone,
-          address,
-          role: "foodPartner",
-        };
-        localStorage.setItem("cravioPartner", JSON.stringify(fallbackPartner));
-        navigate("/partner/dashboard");
+        localStorage.setItem("cravioPendingEmail", email.trim().toLowerCase());
+        navigate("/partner/verify-otp", {
+          state: {
+            email: email.trim().toLowerCase(),
+            role: "partner",
+            restaurantName,
+          },
+        });
       } else {
         setError(err.response?.data?.message || "Registration failed. Please check your details and try again.");
       }

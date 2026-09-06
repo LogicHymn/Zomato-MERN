@@ -26,6 +26,7 @@ function AppRoutes() {
         <Route path="/user/reels" element={<UserReels />} />
         <Route path="/partner/register" element={<PartnerRegister />} />
         <Route path="/partner/login" element={<PartnerLogin />} />
+        <Route path="/partner/verify-otp" element={<VerifyOtp />} />
         <Route path="/partner/dashboard" element={<PartnerDashboard />} />
       </Routes>
     </Router>

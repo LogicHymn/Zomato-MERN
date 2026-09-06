@@ -1,7 +1,8 @@
 import crypto from "crypto";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
-
+import bcrypt from "bcrypt";
+import foodPartnerModel from "../models/foodPartner.model.js";
 import userModel from "../models/user.model.js";
 import sessionModel from "../models/session.model.js";
 import config from "../config/config.js";
@@ -96,6 +97,7 @@ function setRefreshTokenCookie(res, refreshToken) {
         httpOnly: true,
         secure: false, // true in production with HTTPS
         sameSite: "lax",
+        path: "/",
         maxAge: 7 * 24 * 60 * 60 * 1000
     });
 }
@@ -393,11 +395,18 @@ async function logoutUser(req, res) {
             }
         );
 
-        // Clear cookie
+        // Clear cookies
         res.clearCookie("refreshToken", {
             httpOnly: true,
             secure: false,
-            sameSite: "lax"
+            sameSite: "lax",
+            path: "/"
+        });
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            path: "/"
         });
 
         return res.status(200).json({
@@ -443,11 +452,18 @@ async function logoutAllDevices(req, res) {
             }
         );
 
-        // Clear current device cookie
+        // Clear current device cookies
         res.clearCookie("refreshToken", {
             httpOnly: true,
             secure: false,
-            sameSite: "lax"
+            sameSite: "lax",
+            path: "/"
+        });
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            path: "/"
         });
 
         return res.status(200).json({
@@ -498,6 +514,55 @@ async function verifyEmail(req, res) {
         if (otpDoc.expiresAt < new Date()) {
             return res.status(400).json({
                 message: "OTP has expired"
+            });
+        }
+
+        // If partner OTP verification
+        if (otpDoc.partner) {
+            const partner = await foodPartnerModel.findByIdAndUpdate(
+                otpDoc.partner,
+                { isVerified: true },
+                { new: true }
+            );
+
+            if (!partner) {
+                return res.status(404).json({
+                    message: "Partner account not found"
+                });
+            }
+
+            await otpModel.deleteMany({
+                partner: otpDoc.partner
+            });
+
+            const token = jwt.sign(
+                {
+                    id: partner._id,
+                    role: partner.role || "foodPartner"
+                },
+                config.JWT_SECRET || process.env.JWT_SECRET
+            );
+
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: false,
+                sameSite: "lax",
+                path: "/"
+            });
+
+            return res.status(200).json({
+                message: "Partner email verified successfully",
+                role: "partner",
+                token,
+                foodPartner: {
+                    id: partner._id,
+                    name: partner.name,
+                    email: partner.email,
+                    phone: partner.phone,
+                    restaurantName: partner.restaurantName,
+                    address: partner.address,
+                    role: partner.role
+                }
             });
         }
 
@@ -575,11 +640,223 @@ async function verifyEmail(req, res) {
     }
 }
 
+// Register food partner
+async function registerFoodPartner(req, res) {
+    try {
+        const { name, email, password, phone, restaurantName, address } = req.body;
+
+        if (!name || !email || !password || !phone || !restaurantName || !address) {
+            return res.status(400).json({
+                message: "Name, email, password, phone, restaurant name and address are required"
+            });
+        }
+
+        const isAccountAlreadyExists = await foodPartnerModel.findOne({
+            email
+        });
+
+        if (isAccountAlreadyExists) {
+            return res.status(400).json({
+                message: "Food partner already exists"
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const foodPartner = await foodPartnerModel.create({
+            name,
+            email,
+            password: hashedPassword,
+            phone,
+            restaurantName,
+            address,
+            role: "foodPartner"
+        });
+
+        // Generate OTP for partner
+        const otp = generateOtp();
+        const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+        await otpModel.create({
+            email,
+            partner: foodPartner._id,
+            otpHash,
+            expiresAt
+        });
+
+        // Generate OTP email
+        const html = getOtpHtml(otp);
+        try {
+            await sendEmail(email, "Cravio Partner OTP Verification", `Your Partner OTP is ${otp}`, html);
+        } catch (mailErr) {
+            console.error("Partner email send warning:", mailErr.message);
+            console.log(`\n========================================\n[DEV] Partner OTP for ${email}: ${otp}\n========================================\n`);
+        }
+
+        return res.status(201).json({
+            message: "Food partner registered. Please verify OTP.",
+            foodPartner: {
+                id: foodPartner._id,
+                name: foodPartner.name,
+                email: foodPartner.email,
+                phone: foodPartner.phone,
+                restaurantName: foodPartner.restaurantName,
+                address: foodPartner.address,
+                role: foodPartner.role
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+}
+
+// Login food partner
+async function loginFoodPartner(req, res) {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                message: "Email and password are required"
+            });
+        }
+
+        const foodPartner = await foodPartnerModel.findOne({ email });
+
+        if (!foodPartner) {
+            return res.status(401).json({
+                message: "Invalid credentials"
+            });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, foodPartner.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                message: "Invalid credentials"
+            });
+        }
+
+        const token = jwt.sign(
+            {
+                id: foodPartner._id,
+                role: foodPartner.role
+            },
+            config.JWT_SECRET || process.env.JWT_SECRET
+        );
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            path: "/"
+        });
+
+        return res.status(200).json({
+            message: "Food partner logged in successfully",
+            foodPartner: {
+                id: foodPartner._id,
+                name: foodPartner.name,
+                email: foodPartner.email,
+                phone: foodPartner.phone,
+                restaurantName: foodPartner.restaurantName,
+                address: foodPartner.address,
+                role: foodPartner.role
+            },
+            token
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+}
+
+// Logout food partner
+async function logoutFoodPartner(req, res) {
+    try {
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            path: "/"
+        });
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            path: "/"
+        });
+
+        return res.status(200).json({
+            message: "Food partner logged out successfully"
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+}
+
+// RESEND OTP
+async function resendOtp(req, res) {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+
+        const user = await userModel.findOne({ email });
+        const partner = !user ? await foodPartnerModel.findOne({ email }) : null;
+
+        if (!user && !partner) {
+            return res.status(404).json({ message: "Account not found with this email" });
+        }
+
+        const otp = generateOtp();
+        const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+        await otpModel.deleteMany({ email });
+
+        await otpModel.create({
+            email,
+            user: user ? user._id : undefined,
+            partner: partner ? partner._id : undefined,
+            otpHash,
+            expiresAt
+        });
+
+        const html = getOtpHtml(otp);
+        try {
+            await sendEmail(email, "Cravio OTP Verification", `Your new OTP is ${otp}`, html);
+        } catch (mailErr) {
+            console.error("Resend email warning:", mailErr.message);
+            console.log(`\n========================================\n[DEV] Resent OTP for ${email}: ${otp}\n========================================\n`);
+        }
+
+        return res.status(200).json({ message: "A new OTP has been sent to your email." });
+    } catch (err) {
+        console.error("Resend OTP error:", err);
+        return res.status(500).json({ message: "Failed to resend OTP" });
+    }
+}
+
 export default {
     registerUser,
     verifyEmail,
+    resendOtp,
     loginUser,
     refreshToken,
     logoutUser,
-    logoutAllDevices
+    logoutAllDevices,
+    registerFoodPartner,
+    loginFoodPartner,
+    logoutFoodPartner
 };

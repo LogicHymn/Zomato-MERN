@@ -71,7 +71,8 @@ function UserRegister() {
       );
 
       if (response.status === 201) {
-        navigate("/user/verify-otp", { state: { email: email.trim().toLowerCase() } });
+        localStorage.setItem("cravioPendingEmail", email.trim().toLowerCase());
+        navigate("/user/verify-otp", { state: { email: email.trim().toLowerCase(), role: "user" } });
       }
     } catch (err) {
       console.error("Registration error:", err);

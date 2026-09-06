@@ -14,5 +14,16 @@ router.post("/logout", authController.logoutUser);
 router.post("/logout-all-devices",authController.logoutAllDevices);
 
 router.post("/verify-otp", authController.verifyEmail);
+router.post("/resend-otp", authController.resendOtp);
+
+// Food Partner
+router.post("/food-partner/register", authController.registerFoodPartner);
+router.post("/food-partner/login", authController.loginFoodPartner);
+router.post("/food-partner/logout", authController.logoutFoodPartner);
+
+// Shorthand aliases
+router.post("/partner/register", authController.registerFoodPartner);
+router.post("/partner/login", authController.loginFoodPartner);
+router.post("/partner/logout", authController.logoutFoodPartner);
 
 export default router;

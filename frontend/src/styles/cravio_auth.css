@@ -484,6 +484,132 @@
 }
 
 /* ==========================================================================
+   OTP VERIFICATION STYLING
+   ========================================================================== */
+
+.cravio-otp-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.cravio-otp-card {
+  max-width: 460px;
+  width: 100%;
+  background: #14151c;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  padding: 38px 32px;
+  box-sizing: border-box;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.cravio-otp-icon-badge {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: rgba(247, 168, 39, 0.15);
+  border: 1px solid rgba(247, 168, 39, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cravio-gold);
+  margin-bottom: 20px;
+}
+
+.cravio-otp-icon-badge svg {
+  width: 28px;
+  height: 28px;
+}
+
+.cravio-otp-title {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+}
+
+.cravio-otp-desc {
+  font-size: 13.5px;
+  color: var(--cravio-subtext);
+  margin: 0 0 26px 0;
+  line-height: 1.5;
+}
+
+.cravio-otp-email-highlight {
+  color: var(--cravio-gold);
+  font-weight: 700;
+}
+
+.cravio-otp-inputs-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 22px;
+}
+
+.cravio-otp-box {
+  width: 48px;
+  height: 56px;
+  border-radius: 14px;
+  background: #1e1f29;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  font-family: var(--cravio-font);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.cravio-otp-box:focus {
+  border-color: var(--cravio-gold);
+  background: #252735;
+  box-shadow: 0 0 0 3px rgba(247, 168, 39, 0.2);
+  transform: translateY(-2px);
+}
+
+.cravio-otp-resend-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--cravio-subtext);
+  margin-top: 18px;
+}
+
+.cravio-otp-resend-btn {
+  background: transparent;
+  border: none;
+  color: var(--cravio-gold);
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.cravio-otp-resend-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.cravio-otp-resend-btn:disabled {
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
    MOBILE RESPONSIVENESS (<= 800px)
    ========================================================================== */
 

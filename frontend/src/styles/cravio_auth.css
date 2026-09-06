@@ -611,6 +611,173 @@
 }
 
 /* ==========================================================================
+   LOGIN SCREEN SPECIFIC STYLES
+   ========================================================================== */
+
+/* Login Brand & Header Layout */
+.cravio-login-top-section {
+  position: relative;
+  margin-bottom: 24px;
+  min-height: 180px;
+}
+
+.cravio-login-brand {
+  position: relative;
+  z-index: 4;
+  margin-top: 14px;
+}
+
+.cravio-login-brand-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.cravio-login-brand-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cravio-login-brand-icon svg {
+  width: 42px;
+  height: 42px;
+}
+
+.cravio-login-brand-name {
+  font-size: 34px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: baseline;
+}
+
+.cravio-login-brand-tagline {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+}
+
+.cravio-login-dish-peek {
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 225px;
+  height: 225px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 
+    -12px 18px 40px rgba(0, 0, 0, 0.7),
+    0 0 0 2px rgba(255, 255, 255, 0.12);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cravio-login-dish-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Login Headline */
+.cravio-login-heading-section {
+  margin-bottom: 22px;
+  position: relative;
+  z-index: 4;
+}
+
+.cravio-login-heading {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.cravio-login-subheading {
+  margin: 10px 0 0 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--cravio-subtext);
+  font-weight: 500;
+}
+
+/* Forgot Password Link */
+.cravio-forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
+.cravio-forgot-link {
+  color: var(--cravio-gold);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.cravio-forgot-link:hover {
+  text-decoration: underline;
+  color: var(--cravio-gold-hover);
+}
+
+/* Wide Social Sign-In Buttons (Google & Apple) */
+.cravio-social-wide-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.cravio-social-wide-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 52px;
+  border-radius: 16px;
+  background-color: var(--cravio-input-bg);
+  border: 1.5px solid var(--cravio-input-border);
+  color: #ffffff;
+  font-family: var(--cravio-font);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0 16px;
+}
+
+.cravio-social-wide-btn:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+  background-color: #24262d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.cravio-social-wide-btn:active {
+  transform: translateY(1px);
+}
+
+.cravio-social-wide-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
    RESPONSIVE DESIGN
    ========================================================================== */
 

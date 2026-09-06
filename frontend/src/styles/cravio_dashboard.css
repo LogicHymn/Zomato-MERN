@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
+/* ==========================================================================
+   CRAVIO USER DASHBOARD (RESPONSIVE FOR LAPTOP & MOBILE)
+   ========================================================================== */
 
 :root {
   --cravio-gold: #f7a827;
@@ -10,6 +13,73 @@
   --cravio-subtext: #9da4b0;
   --cravio-border: rgba(255, 255, 255, 0.08);
   --cravio-font: 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ==========================================================================
+   LIGHT THEME OVERRIDES
+   ========================================================================== */
+
+[data-theme="light"] {
+  --cravio-dark-bg: #f8fafc;
+  --cravio-dark-surface: #ffffff;
+  --cravio-dark-card: #ffffff;
+  --cravio-subtext: #64748b;
+  --cravio-border: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .cravio-dash-wrapper {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(circle at 90% 10%, rgba(247, 168, 39, 0.06) 0%, transparent 40%),
+    linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  color: #0f172a;
+}
+
+[data-theme="light"] .cravio-web-nav {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .cravio-web-brand-name,
+[data-theme="light"] .cravio-greeting-title,
+[data-theme="light"] .cravio-section-title,
+[data-theme="light"] .cravio-restaurant-name,
+[data-theme="light"] .cravio-reel-title,
+[data-theme="light"] .cravio-restaurant-price,
+[data-theme="light"] .cravio-search-input {
+  color: #0f172a;
+}
+
+[data-theme="light"] .cravio-location-btn,
+[data-theme="light"] .cravio-bell-btn {
+  background: rgba(0, 0, 0, 0.04);
+  color: #0f172a;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .cravio-nav-search-box,
+[data-theme="light"] .cravio-category-circle,
+[data-theme="light"] .cravio-restaurant-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .cravio-user-dropdown,
+[data-theme="light"] .cravio-profile-drawer {
+  background-color: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .cravio-dropdown-item {
+  color: #334155;
+}
+
+[data-theme="light"] .cravio-dropdown-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #0f172a;
 }
 
 /* Page Outer Wrapper */
@@ -59,7 +129,7 @@
   align-items: center;
   gap: 12px;
   text-decoration: none;
-  color: #ffffff;
+  color: inherit;
   flex-shrink: 0;
 }
 
@@ -83,7 +153,7 @@
   gap: 6px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--cravio-border);
-  color: #ffffff;
+  color: inherit;
   font-family: var(--cravio-font);
   font-size: 13.5px;
   font-weight: 600;
@@ -122,7 +192,6 @@
 .cravio-nav-search-box:focus-within {
   border-color: var(--cravio-gold);
   box-shadow: 0 0 0 3px rgba(247, 168, 39, 0.15);
-  background-color: #23252e;
 }
 
 .cravio-search-input {
@@ -130,7 +199,7 @@
   background: transparent;
   border: none;
   outline: none;
-  color: #ffffff;
+  color: inherit;
   font-family: var(--cravio-font);
   font-size: 13.5px;
   font-weight: 500;
@@ -164,13 +233,13 @@
 }
 
 .cravio-nav-tab-btn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
+  color: var(--cravio-gold);
+  background: rgba(247, 168, 39, 0.08);
 }
 
 .cravio-nav-tab-btn.active {
   color: var(--cravio-gold);
-  background: rgba(247, 168, 39, 0.12);
+  background: rgba(247, 168, 39, 0.15);
 }
 
 /* Right Nav Controls */
@@ -184,7 +253,7 @@
   position: relative;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--cravio-border);
-  color: #ffffff;
+  color: inherit;
   width: 40px;
   height: 40px;
   display: flex;
@@ -233,16 +302,17 @@
   transform: scale(1.05);
 }
 
+/* Dropdown Menu */
 .cravio-user-dropdown {
   position: absolute;
   top: 48px;
   right: 0;
   background: #1e2026;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
+  border-radius: 18px;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
-  padding: 8px 0;
-  min-width: 170px;
+  padding: 10px 0;
+  min-width: 220px;
   z-index: 60;
 }
 
@@ -254,7 +324,7 @@
   padding: 10px 16px;
   background: transparent;
   border: none;
-  color: #e2e8f0;
+  color: inherit;
   font-family: var(--cravio-font);
   font-size: 13.5px;
   font-weight: 500;
@@ -264,8 +334,8 @@
 }
 
 .cravio-dropdown-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  background: rgba(247, 168, 39, 0.1);
+  color: var(--cravio-gold);
 }
 
 .cravio-dropdown-item.logout {
@@ -273,14 +343,113 @@
 }
 
 /* ==========================================================================
-   MAIN DASHBOARD CONTENT (MAX-WIDTH CONTAINER)
+   APPEARANCE TOGGLE (THEME SWITCHER IN PROFILE)
+   ========================================================================== */
+
+.cravio-appearance-box {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--cravio-border);
+  margin-bottom: 6px;
+}
+
+.cravio-appearance-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--cravio-subtext);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cravio-theme-segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 3px;
+  border-radius: 12px;
+  gap: 4px;
+}
+
+.cravio-theme-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 9px;
+  border: none;
+  font-family: var(--cravio-font);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #9da4b0;
+  background: transparent;
+  transition: all 0.18s ease;
+}
+
+.cravio-theme-option.active {
+  background: var(--cravio-gold);
+  color: #121316;
+  box-shadow: 0 2px 8px rgba(247, 168, 39, 0.4);
+}
+
+/* ==========================================================================
+   MY ORDERS PREVIEW IN PROFILE
+   ========================================================================== */
+
+.cravio-profile-orders-box {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--cravio-border);
+  margin-bottom: 6px;
+}
+
+.cravio-profile-order-preview {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--cravio-border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+.cravio-profile-order-preview:hover {
+  border-color: var(--cravio-gold);
+}
+
+.cravio-profile-order-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.cravio-profile-order-meta h5 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cravio-profile-order-meta span {
+  font-size: 11px;
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   MAIN DASHBOARD CONTENT
    ========================================================================== */
 
 .cravio-dash-main {
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
-  padding: 32px 32px 60px 32px;
+  padding: 32px 32px 140px 32px;
   box-sizing: border-box;
 }
 
@@ -294,7 +463,6 @@
   font-size: 32px;
   font-weight: 800;
   letter-spacing: -0.025em;
-  color: #ffffff;
 }
 
 .cravio-greeting-sub {
@@ -304,13 +472,13 @@
   font-weight: 500;
 }
 
-/* Mobile-only search box (visible <= 900px) */
+/* Mobile-only search box */
 .cravio-mobile-search {
   display: none;
   margin-bottom: 20px;
 }
 
-/* Special Offer Banner (Responsive) */
+/* Special Offer Banner */
 .cravio-offer-banner {
   position: relative;
   background: linear-gradient(135deg, #faedd8 0%, #f7dfbe 100%);
@@ -404,10 +572,7 @@
   color: #f7a827;
 }
 
-/* ==========================================================================
-   CATEGORIES CAROUSEL / GRID
-   ========================================================================== */
-
+/* Categories Carousel */
 .cravio-categories-scroll {
   display: flex;
   align-items: center;
@@ -438,7 +603,7 @@
 }
 
 .cravio-category-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(247, 168, 39, 0.08);
   transform: translateY(-3px);
 }
 
@@ -468,14 +633,11 @@
 }
 
 .cravio-category-item.active .cravio-category-name {
-  color: #ffffff;
+  color: var(--cravio-gold);
   font-weight: 700;
 }
 
-/* ==========================================================================
-   SECTIONS: HEADINGS & GRIDS
-   ========================================================================== */
-
+/* Section Headers */
 .cravio-section-header {
   display: flex;
   align-items: center;
@@ -488,7 +650,6 @@
   font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.01em;
-  color: #ffffff;
 }
 
 .cravio-see-all-btn {
@@ -509,7 +670,7 @@
   color: var(--cravio-gold);
 }
 
-/* Food Reels Grid (4 Columns on Desktop) */
+/* Food Reels Grid */
 .cravio-reels-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -599,7 +760,7 @@
   opacity: 0.85;
 }
 
-/* Recommended Restaurants Grid (3 Columns on Desktop) */
+/* Recommended Restaurants Grid */
 .cravio-recommended-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -618,7 +779,7 @@
 .cravio-restaurant-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: rgba(247, 168, 39, 0.3);
 }
 
 .cravio-restaurant-media {
@@ -695,7 +856,6 @@
   margin: 0 0 8px 0;
   font-size: 17px;
   font-weight: 700;
-  color: #ffffff;
 }
 
 .cravio-restaurant-meta {
@@ -718,22 +878,293 @@
 .cravio-restaurant-price {
   font-size: 13.5px;
   font-weight: 600;
-  color: #e2e8f0;
 }
 
 /* ==========================================================================
-   MOBILE BOTTOM NAVIGATION DOCK (VISIBLE ON <= 900px ONLY)
+   FLOATING CART CAPSULE (MATCHING REFERENCE IMAGE)
    ========================================================================== */
 
-.cravio-bottom-nav {
-  display: none;
+.cravio-floating-cart-bar {
+  position: fixed;
+  bottom: 82px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 36px);
+  max-width: 480px;
+  background: #252732;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+  padding: 6px 12px 6px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+  z-index: 55;
+  animation: slideUpFloat 0.3s ease;
+  box-sizing: border-box;
+}
+
+@keyframes slideUpFloat {
+  from { opacity: 0; transform: translate(-50%, 16px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.cravio-floating-cart-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cravio-floating-cart-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #a7f3d0;
+  flex-shrink: 0;
+}
+
+.cravio-floating-cart-info h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.cravio-floating-cart-link {
+  font-size: 12px;
+  color: #cbd5e1;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 1px;
+}
+
+.cravio-floating-cart-link svg {
+  color: #e23744;
+}
+
+.cravio-floating-cart-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cravio-cart-view-btn {
+  background: #d83a48;
+  border: none;
+  border-radius: 9999px;
+  color: #ffffff;
+  padding: 7px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(216, 58, 72, 0.4);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.cravio-cart-view-btn:hover {
+  background: #e23744;
+  transform: scale(1.03);
+}
+
+.cravio-cart-view-btn strong {
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.cravio-cart-view-btn span {
+  font-size: 11px;
+  opacity: 0.95;
+}
+
+.cravio-cart-dismiss-btn {
+  background: #1c1d25;
+  border: none;
+  color: #ffffff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+}
+
+.cravio-cart-dismiss-btn:hover {
+  opacity: 1;
 }
 
 /* ==========================================================================
-   RESPONSIVE BREAKPOINTS
+   CUSTOM BOTTOM NAVIGATION DOCK (MATCHING REFERENCE IMAGE)
    ========================================================================== */
 
-/* Tablets & Small Laptops */
+.cravio-custom-bottom-dock {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #16171f;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 18px 20px 18px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+}
+
+/* 1. Home Button (Red/Burgundy Pill Capsule) */
+.cravio-dock-btn-home {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #2b171c;
+  border: 1px solid rgba(226, 55, 68, 0.25);
+  border-radius: 9999px;
+  padding: 8px 22px;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: var(--cravio-font);
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.cravio-dock-btn-home:hover {
+  background: #361a20;
+}
+
+.cravio-dock-btn-home svg {
+  color: #e23744;
+  width: 18px;
+  height: 18px;
+}
+
+/* 2 & 3. Normal Dock Buttons: Under ₹250 & Dining */
+.cravio-dock-btn-normal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  font-family: var(--cravio-font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: color 0.15s ease;
+}
+
+.cravio-dock-btn-normal:hover,
+.cravio-dock-btn-normal.active {
+  color: #ffffff;
+}
+
+.cravio-dock-btn-normal svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* 4. Healthy Mode (Dark Green Capsule with Lime Heart) */
+.cravio-dock-btn-healthy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #253a1f;
+  border: 1px solid rgba(163, 230, 53, 0.25);
+  border-radius: 9999px;
+  padding: 8px 18px;
+  color: #bef264;
+  cursor: pointer;
+  font-family: var(--cravio-font);
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.cravio-dock-btn-healthy:hover {
+  background: #2e4726;
+}
+
+.cravio-dock-btn-healthy svg {
+  color: #a3e635;
+  width: 18px;
+  height: 18px;
+}
+
+/* Cart Modal Drawer */
+.cravio-cart-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 110;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.cravio-cart-modal-card {
+  background: #181920;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  padding: 28px;
+  max-width: 440px;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+/* Profile Modal Drawer */
+.cravio-profile-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 120;
+  padding: 20px;
+  box-sizing: border-box;
+  animation: slideUpFloat 0.25s ease;
+}
+
+.cravio-profile-modal-card {
+  background: var(--cravio-dark-surface, #181920);
+  border: 1px solid var(--cravio-border, rgba(255, 255, 255, 0.12));
+  border-radius: 24px;
+  padding: 26px;
+  max-width: 440px;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  color: inherit;
+}
+
+[data-theme="light"] .cravio-profile-modal-card,
+[data-theme="light"] .cravio-cart-modal-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Overrides */
 @media (max-width: 1024px) {
   .cravio-reels-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -744,7 +1175,6 @@
   }
 }
 
-/* Mobile Devices (<= 768px) */
 @media (max-width: 768px) {
   .cravio-nav-links,
   .cravio-nav-search-box {
@@ -756,7 +1186,7 @@
   }
 
   .cravio-dash-main {
-    padding: 20px 18px 90px 18px;
+    padding: 20px 18px 150px 18px;
   }
 
   .cravio-mobile-search {
@@ -789,7 +1219,6 @@
     height: 160px;
   }
 
-  /* Horizontal carousels on mobile */
   .cravio-reels-grid {
     display: flex;
     overflow-x: auto;
@@ -822,49 +1251,5 @@
   .cravio-restaurant-card {
     width: 220px;
     flex-shrink: 0;
-  }
-
-  /* Mobile Docked Bottom Navigation */
-  .cravio-bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(18, 19, 24, 0.95);
-    backdrop-filter: blur(16px);
-    border-top: 1px solid var(--cravio-border);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 8px 10px 18px 10px;
-    box-sizing: border-box;
-    z-index: 50;
-  }
-
-  .cravio-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #8e95a5;
-    font-family: var(--cravio-font);
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-  }
-
-  .cravio-nav-item.active {
-    color: var(--cravio-gold);
-    font-weight: 700;
-  }
-
-  .cravio-nav-dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: var(--cravio-gold);
   }
 }

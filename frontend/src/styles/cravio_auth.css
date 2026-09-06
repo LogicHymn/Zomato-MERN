@@ -434,6 +434,10 @@
   margin-bottom: 16px;
 }
 
+.cravio-social-wide-row.single {
+  grid-template-columns: 1fr;
+}
+
 .cravio-social-wide-btn {
   display: flex;
   align-items: center;

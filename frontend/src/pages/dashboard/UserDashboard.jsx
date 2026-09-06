@@ -6,6 +6,9 @@ import "../../styles/cravio_dashboard.css";
 // Decorative Photography Asset
 import burgerImg from "../../assets/cravio_burger.jpg";
 
+import UserOrders from "./UserOrders";
+import UserReels from "./UserReels";
+
 function UserDashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("cravioUser") || "{}");
@@ -19,6 +22,14 @@ function UserDashboard() {
   const [showLocationMenu, setShowLocationMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [favorites, setFavorites] = useState({ 1: true });
+
+  if (activeTab === "Orders") {
+    return <UserOrders onTabChange={setActiveTab} />;
+  }
+
+  if (activeTab === "Reels") {
+    return <UserReels onTabChange={setActiveTab} />;
+  }
 
   const handleLogout = async () => {
     try {

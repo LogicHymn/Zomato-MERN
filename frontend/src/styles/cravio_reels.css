@@ -1,0 +1,527 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
+
+/* ==========================================================================
+   CRAVIO FOOD REELS PAGE STYLES (RESPONSIVE LAPTOP & MOBILE)
+   ========================================================================== */
+
+:root {
+  --cravio-gold: #f7a827;
+  --cravio-gold-hover: #ffb73e;
+  --cravio-dark-bg: #0b0c0f;
+  --cravio-dark-card: #16171d;
+  --cravio-subtext: #9da4b0;
+  --cravio-border: rgba(255, 255, 255, 0.1);
+  --cravio-font: 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Page Outer Layout */
+.cravio-reels-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--cravio-dark-bg);
+  background-image: radial-gradient(circle at 50% 20%, rgba(247, 168, 39, 0.06) 0%, transparent 60%);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--cravio-font);
+  color: #ffffff;
+  box-sizing: border-box;
+}
+
+/* Main Container (Desktop Split / Center Stage) */
+.cravio-reels-main {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 20px 80px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   VERTICAL REEL PLAYER (CENTER STAGE)
+   ========================================================================== */
+
+.cravio-reel-viewport {
+  position: relative;
+  width: 100%;
+  max-width: 410px;
+  height: 750px;
+  max-height: 85vh;
+  background-color: #000000;
+  border-radius: 36px;
+  overflow: hidden;
+  box-shadow: 
+    0 25px 65px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+/* Background Reel Video / High-Res Image */
+.cravio-reel-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+/* Dark gradient overlays for readability */
+.cravio-reel-top-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 140px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.75) 0%, transparent 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cravio-reel-bottom-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 280px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.45) 60%, transparent 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Top Header Bar Inside Reel (Tabs + Search) */
+.cravio-reel-top-nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.cravio-reel-tabs {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.cravio-reel-tab {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--cravio-font);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
+  position: relative;
+  transition: color 0.15s ease;
+}
+
+.cravio-reel-tab.active {
+  color: #ffffff;
+}
+
+.cravio-reel-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2.5px;
+  background-color: var(--cravio-gold);
+  border-radius: 9999px;
+}
+
+.cravio-reel-tab-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  margin-left: 4px;
+  transform: translateY(-4px);
+}
+
+.cravio-reel-search-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+/* Creator Profile Pill (Top Left) */
+.cravio-reel-creator-pill {
+  position: absolute;
+  top: 68px;
+  left: 20px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  padding: 6px 14px 6px 6px;
+}
+
+.cravio-creator-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--cravio-gold);
+}
+
+.cravio-creator-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.cravio-creator-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cravio-verified-tick {
+  color: var(--cravio-gold);
+}
+
+.cravio-creator-followers {
+  font-size: 10.5px;
+  color: #cbd5e1;
+}
+
+.cravio-follow-btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-family: var(--cravio-font);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: all 0.15s ease;
+}
+
+.cravio-follow-btn.following {
+  background: var(--cravio-gold);
+  color: #121316;
+  border-color: var(--cravio-gold);
+}
+
+/* ==========================================================================
+   RIGHT VERTICAL FLOATING ACTION BAR
+   ========================================================================== */
+
+.cravio-reel-actions-bar {
+  position: absolute;
+  right: 14px;
+  bottom: 80px;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.cravio-reel-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.18s ease;
+}
+
+.cravio-reel-action-btn:hover {
+  transform: scale(1.1);
+}
+
+.cravio-action-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(20, 21, 26, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.cravio-action-circle.liked {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.cravio-action-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Vinyl Audio Disc */
+.cravio-vinyl-disc {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #333640;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  animation: spinSlow 5s linear infinite;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.cravio-vinyl-disc img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   BOTTOM DETAILS & DISH ORDER CARD
+   ========================================================================== */
+
+.cravio-reel-bottom-info {
+  position: relative;
+  z-index: 10;
+  padding: 0 16px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 82%;
+}
+
+/* Floating Dish CTA Card */
+.cravio-reel-dish-card {
+  background: rgba(18, 19, 24, 0.85);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6);
+}
+
+.cravio-dish-card-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cravio-dish-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.cravio-dish-card-details h5 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.cravio-dish-card-details p {
+  margin: 2px 0;
+  font-size: 10px;
+  color: #cbd5e1;
+}
+
+.cravio-dish-price {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--cravio-gold);
+}
+
+.cravio-dish-order-btn {
+  background: var(--cravio-gold);
+  color: #121316;
+  font-family: var(--cravio-font);
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  border-radius: 9999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(247, 168, 39, 0.4);
+  transition: transform 0.15s ease;
+}
+
+.cravio-dish-order-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Captions and Hashtags */
+.cravio-reel-caption {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.cravio-reel-tags {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--cravio-gold);
+  margin: 2px 0;
+}
+
+.cravio-reel-audio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+/* ==========================================================================
+   DESKTOP SIDEBAR PANEL (MORE REELS & DISH INFO)
+   ========================================================================== */
+
+.cravio-reels-desktop-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 420px;
+  width: 100%;
+}
+
+.cravio-reel-nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cravio-reel-nav-arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--cravio-dark-card);
+  border: 1px solid var(--cravio-border);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cravio-reel-nav-arrow:hover {
+  border-color: var(--cravio-gold);
+  color: var(--cravio-gold);
+  transform: translateY(-2px);
+}
+
+.cravio-reels-queue {
+  background: var(--cravio-dark-card);
+  border: 1px solid var(--cravio-border);
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.cravio-reels-queue h4 {
+  margin: 0 0 14px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.cravio-queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cravio-queue-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.cravio-queue-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cravio-queue-thumb {
+  width: 44px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.cravio-queue-info h5 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.cravio-queue-info span {
+  font-size: 11px;
+  color: #9da4b0;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVENESS (<= 900px)
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .cravio-reels-desktop-panel {
+    display: none;
+  }
+
+  .cravio-reels-main {
+    padding: 0;
+  }
+
+  .cravio-reel-viewport {
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+  }
+}

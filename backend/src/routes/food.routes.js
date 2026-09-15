@@ -10,7 +10,9 @@ const router = express.Router();
 // POST /api/food/ [protected]
 router.post("/", foodPartnerAuthMiddleware, upload.fields([{ name: "video", maxCount: 1 }, { name: "image", maxCount: 1 }]), foodController.createFood);
 
-router.get("/", foodController.getFoodItem);
+router.get("/", foodController.getFoodItems);
+router.get("/partner", foodPartnerAuthMiddleware, foodController.getPartnerFood);
+router.get("/:id", foodController.getFoodItem);
 router.delete("/:id", foodPartnerAuthMiddleware, foodController.deleteFood);
 router.patch("/:id/status", foodPartnerAuthMiddleware, foodController.toggleFoodStatus);
 

@@ -4,6 +4,9 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import foodRoutes from "./routes/food.routes.js";
+import userRoutes from "./routes/user.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
+import orderRoutes from "./routes/order.routes.js";
 
 const app = express();
 
@@ -15,8 +18,10 @@ app.use(cors({
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-
 app.use("/api/auth", authRoutes);
 app.use("/api/food", foodRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/order", orderRoutes);
 
 export default app;

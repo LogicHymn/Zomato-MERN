@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 /**
- * VerifyOtp Page
- * Route: /user/verify-otp
- * Clean 6-digit OTP verification screen navigating to /user/dashboard
+ * PartnerVerifyOtp Page
+ * Route: /partner/verify-otp
  */
-function VerifyOtp() {
+function PartnerVerifyOtp() {
   const navigate = useNavigate();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [resendNotif, setResendNotif] = useState(false);
@@ -17,24 +16,23 @@ function VerifyOtp() {
     updated[index] = value;
     setOtp(updated);
 
-    // Auto-focus next input box
     if (value && index < 5) {
-      const nextInput = document.getElementById(`user-otp-${index + 1}`);
+      const nextInput = document.getElementById(`partner-otp-${index + 1}`);
       if (nextInput) nextInput.focus();
     }
   };
 
   const handleKeyDown = (index, e) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      const prevInput = document.getElementById(`user-otp-${index - 1}`);
+      const prevInput = document.getElementById(`partner-otp-${index - 1}`);
       if (prevInput) prevInput.focus();
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // UI-only navigation to user dashboard
-    navigate("/user/dashboard");
+    // UI-only navigation to partner dashboard
+    navigate("/partner/dashboard");
   };
 
   const handleResend = () => {
@@ -46,9 +44,11 @@ function VerifyOtp() {
     <div className="auth-page-container">
       <div className="auth-card">
         <div className="auth-header">
-          <span className="auth-badge">Account Verification</span>
-          <h1 className="auth-title">Verify Your Email</h1>
-          <p className="auth-subtitle">We've sent a 6-digit verification code to your email.</p>
+          <span className="auth-badge" style={{ color: "#f59e0b", background: "rgba(245, 158, 11, 0.1)" }}>
+            Partner Verification
+          </span>
+          <h1 className="auth-title">Verify Partner Email</h1>
+          <p className="auth-subtitle">Enter the 6-digit verification code sent to your partner business email.</p>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -56,7 +56,7 @@ function VerifyOtp() {
             {otp.map((digit, idx) => (
               <input
                 key={idx}
-                id={`user-otp-${idx}`}
+                id={`partner-otp-${idx}`}
                 type="text"
                 maxLength={1}
                 className="otp-box"
@@ -76,28 +76,28 @@ function VerifyOtp() {
                 marginBottom: 12,
               }}
             >
-              ✓ New verification code sent to your email!
+              ✓ New verification code sent to your partner email!
             </div>
           )}
 
           <button
             type="submit"
             className="cravio-btn cravio-btn-primary"
-            style={{ width: "100%", padding: 12, marginTop: 8 }}
+            style={{ width: "100%", padding: 12, marginTop: 8, background: "#f59e0b", color: "#000" }}
           >
-            Verify OTP
+            Verify & Open Kitchen Dashboard
           </button>
         </form>
 
         <div className="auth-footer-links">
-          Didn't receive it?
+          Didn't receive code?
           <button
             type="button"
             onClick={handleResend}
             style={{
               background: "none",
               border: "none",
-              color: "var(--brand-primary)",
+              color: "#f59e0b",
               fontWeight: 600,
               cursor: "pointer",
               marginLeft: 4,
@@ -108,8 +108,8 @@ function VerifyOtp() {
         </div>
 
         <div style={{ textAlign: "center", marginTop: 16, fontSize: 12 }}>
-          <Link to="/user/login" style={{ color: "var(--text-muted)" }}>
-            ← Back to Login
+          <Link to="/partner/login" style={{ color: "var(--text-muted)" }}>
+            ← Back to Partner Login
           </Link>
         </div>
       </div>
@@ -117,4 +117,4 @@ function VerifyOtp() {
   );
 }
 
-export default VerifyOtp;
+export default PartnerVerifyOtp;

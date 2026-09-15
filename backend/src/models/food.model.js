@@ -26,6 +26,11 @@ const foodSchema = new mongoose.Schema(
             type: String,
             default: "General",
         },
+        foodType: {
+            type: String,
+            enum: ["Veg", "Non-Veg"],
+            default: "Veg",
+        },
         status: {
             type: String,
             default: "Available",

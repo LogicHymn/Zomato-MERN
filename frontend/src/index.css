@@ -1,16 +1,1052 @@
-@import "./styles/variables.css";
-@import "./styles/auth.css";
+/* ==========================================================================
+   CRAVIO // Modern Food Delivery UI Design System
+   Minimal, clean, modern food-delivery application aesthetic
+   ========================================================================== */
+
+:root {
+  /* Brand & Accents */
+  --brand-primary: #e23744;
+  --brand-primary-hover: #cb202d;
+  --brand-glow: rgba(226, 55, 68, 0.2);
+
+  /* Neutrals (Modern Dark Slate / Charcoal for a high-end food app) */
+  --bg-main: #0c1017;
+  --bg-card: #131924;
+  --bg-card-hover: #192231;
+  --bg-input: #0e141f;
+  --bg-header: rgba(12, 16, 23, 0.92);
+  --bg-modal: #151d2a;
+
+  /* Borders */
+  --border-subtle: #1e2838;
+  --border-active: #e23744;
+  --border-focus: #3b82f6;
+
+  /* Typography */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-light: #ffffff;
+
+  /* Status */
+  --status-available: #10b981;
+  --status-available-bg: rgba(16, 185, 129, 0.12);
+  --status-unavailable: #ef4444;
+  --status-unavailable-bg: rgba(239, 68, 68, 0.12);
+  --tag-veg: #16a34a;
+  --tag-nonveg: #dc2626;
+
+  /* Sizing & Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 9999px;
+
+  /* Fonts */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
 
 *, *::before, *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-family);
-  background-color: var(--bg-page);
+  font-family: var(--font-sans);
+  background-color: var(--bg-main);
   color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 3px;
+}
+
+/* App Container */
+.cravio-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.cravio-main {
+  flex: 1;
+}
+
+/* ==========================================================================
+   Header / Navbar
+   ========================================================================== */
+.cravio-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-header);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 24px;
+}
+
+.cravio-nav-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cravio-logo {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cravio-logo span {
+  color: var(--brand-primary);
+}
+
+.nav-search-bar {
+  flex: 1;
+  max-width: 480px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-search-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 10px 18px 10px 40px;
+  color: var(--text-primary);
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.nav-search-input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-glow);
+}
+
+.nav-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.cravio-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  transition: all 0.15s ease;
+}
+
+.nav-link:hover {
+  color: var(--text-light);
+  background: var(--bg-card);
+}
+
+.nav-link.active {
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+
+.nav-partner-btn {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  transition: all 0.2s;
+}
+
+.nav-partner-btn:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+}
+
+/* Buttons */
+.cravio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.cravio-btn-primary {
+  background: var(--brand-primary);
+  color: #ffffff;
+}
+
+.cravio-btn-primary:hover {
+  background: var(--brand-primary-hover);
+  box-shadow: 0 4px 12px var(--brand-glow);
+}
+
+.cravio-btn-outline {
+  background: transparent;
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.cravio-btn-outline:hover {
+  background: var(--bg-card);
+  border-color: var(--text-muted);
+}
+
+.cravio-btn-secondary {
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.cravio-btn-secondary:hover {
+  background: var(--bg-card-hover);
+}
+
+.cravio-btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.cravio-btn-danger {
+  background: var(--status-unavailable-bg);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+.cravio-btn-danger:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   Hero Section
+   ========================================================================== */
+.hero-section {
+  position: relative;
+  padding: 48px 24px 32px;
+  background: radial-gradient(circle at 50% 0%, rgba(226, 55, 68, 0.12) 0%, transparent 70%);
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-primary);
+  background: rgba(226, 55, 68, 0.1);
+  border: 1px solid rgba(226, 55, 68, 0.25);
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-light);
+  margin-bottom: 12px;
+}
+
+.hero-title span {
+  color: var(--brand-primary);
+}
+
+.hero-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* Category Filter Bar */
+.category-filter-section {
+  max-width: 1280px;
+  margin: 24px auto 0;
+  padding: 0 24px;
+}
+
+.category-scroll-list {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.category-pill:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
+.category-pill.active {
+  background: var(--brand-primary);
+  color: #ffffff;
+  border-color: var(--brand-primary);
+  box-shadow: 0 4px 10px var(--brand-glow);
+}
+
+/* ==========================================================================
+   Food Grid & Cards
+   ========================================================================== */
+.food-feed-section {
+  max-width: 1280px;
+  margin: 32px auto 64px;
+  padding: 0 24px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+.section-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.cravio-food-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cravio-food-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(226, 55, 68, 0.4);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+}
+
+.food-card-thumb-wrap {
+  position: relative;
+  height: 190px;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-input);
+}
+
+.food-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.cravio-food-card:hover .food-card-img {
+  transform: scale(1.04);
+}
+
+.food-status-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(8px);
+}
+
+.food-status-badge.available {
+  background: rgba(16, 185, 129, 0.85);
+  color: #ffffff;
+}
+
+.food-status-badge.unavailable {
+  background: rgba(239, 68, 68, 0.85);
+  color: #ffffff;
+}
+
+.food-category-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(12, 16, 23, 0.8);
+  color: var(--text-light);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(6px);
+}
+
+.food-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.food-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.food-item-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-light);
+  line-height: 1.3;
+}
+
+.food-item-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+
+.food-restaurant-name {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.food-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 14px;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.food-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.veg-indicator {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--tag-veg);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.veg-indicator-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--tag-veg);
+}
+
+/* ==========================================================================
+   Auth Screens (User & Partner Register / Login)
+   ========================================================================== */
+.auth-page-container {
+  min-height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: radial-gradient(circle at 50% 10%, rgba(226, 55, 68, 0.08) 0%, transparent 60%);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.auth-card-wide {
+  max-width: 580px;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.auth-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brand-primary);
+  background: rgba(226, 55, 68, 0.1);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 10px;
+}
+
+.auth-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-light);
+  letter-spacing: -0.02em;
+}
+
+.auth-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  color: var(--text-primary);
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-glow);
+}
+
+.form-input::placeholder, .form-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.auth-footer-links {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.auth-footer-links a {
+  color: var(--brand-primary);
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.auth-footer-links a:hover {
+  text-decoration: underline;
+}
+
+/* OTP 6-box UI */
+.otp-input-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.otp-box {
+  width: 48px;
+  height: 52px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+  color: var(--text-light);
+}
+
+.otp-box:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-glow);
+}
+
+/* ==========================================================================
+   Partner Dashboard (Menu & Food Manager)
+   ========================================================================== */
+.partner-dashboard-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.partner-dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 28px;
+}
+
+.dash-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.dash-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.dash-stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.dash-stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-light);
+}
+
+.dash-stat-meta {
+  font-size: 11px;
+  color: var(--status-available);
+  margin-top: 4px;
+}
+
+/* Menu Table */
+.menu-table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.table-header-bar {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cravio-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.cravio-table th {
+  padding: 12px 20px;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.cravio-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.cravio-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cravio-table tr:hover td {
+  background: var(--bg-card-hover);
+}
+
+.table-food-img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--bg-input);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.status-pill.available {
+  background: var(--status-available-bg);
+  color: var(--status-available);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.status-pill.unavailable {
+  background: var(--status-unavailable-bg);
+  color: var(--status-unavailable);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+/* Footer */
+.cravio-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 32px 24px;
+  background: var(--bg-card);
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   Reels Card Styles
+   ========================================================================== */
+.cravio-reel-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.cravio-reel-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(226, 55, 68, 0.4);
+}
+
+.reel-thumb-wrap {
+  position: relative;
+  height: 140px;
+  width: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+.reel-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+.reel-play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #fff;
+  padding-left: 2px;
+}
+
+.reel-duration-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.reel-like-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.reel-info {
+  padding: 10px 12px;
+}
+
+.reel-dish-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+.reel-restaurant-tag {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.reel-metrics {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   Persistent Cart Bar
+   ========================================================================== */
+.cravio-cart-bar-container {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+  pointer-events: none;
+}
+
+.cravio-cart-bar {
+  pointer-events: auto;
+  max-width: 680px;
+  width: 100%;
+  background: #182232;
+  border: 1px solid rgba(226, 55, 68, 0.4);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  border-radius: var(--radius-pill);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.cart-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cart-bar-badge {
+  background: var(--brand-primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.cart-bar-subtotal {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-light);
+}
+
+.cart-bar-subtext {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+.cart-bar-btn {
+  padding: 8px 18px;
+  font-size: 13px;
+  border-radius: var(--radius-pill);
+}
+
+/* ==========================================================================
+   Light Mode Theme
+   ========================================================================== */
+body.light-mode {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-input: #f1f5f9;
+  --bg-header: rgba(255, 255, 255, 0.94);
+  --border-subtle: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-light: #0f172a;
+}
+
+body.light-mode .cravio-cart-bar {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .feed-layout-container {
+    grid-template-columns: 1fr !important;
+  }
+  .reels-sidebar-section {
+    position: static !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .cravio-navbar {
+    padding: 10px 16px;
+  }
+  .nav-search-bar {
+    display: none;
+  }
+  .hero-title {
+    font-size: 28px;
+  }
+  .cravio-table th:nth-child(4),
+  .cravio-table td:nth-child(4) {
+    display: none;
+  }
+}
+

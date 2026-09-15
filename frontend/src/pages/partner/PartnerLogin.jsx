@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 /**
- * UserLogin Page
- * Route: /user/login
+ * PartnerLogin Page
+ * Route: /partner/login
  */
-function UserLogin() {
+function PartnerLogin() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -15,27 +15,29 @@ function UserLogin() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // UI-only navigation to user dashboard
-    navigate("/user/dashboard");
+    // UI-only navigation to partner dashboard
+    navigate("/partner/dashboard");
   };
 
   return (
     <div className="auth-page-container">
       <div className="auth-card">
         <div className="auth-header">
-          <span className="auth-badge">Food Lovers</span>
-          <h1 className="auth-title">Welcome Back</h1>
-          <p className="auth-subtitle">Log in to explore dishes, order meals, and track deliveries</p>
+          <span className="auth-badge" style={{ color: "#f59e0b", background: "rgba(245, 158, 11, 0.1)" }}>
+            Restaurant Partner
+          </span>
+          <h1 className="auth-title">Partner Login</h1>
+          <p className="auth-subtitle">Access your kitchen dashboard, menu catalog, and dish settings</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Email Address</label>
+            <label className="form-label">Business Email</label>
             <input
               type="email"
               required
               className="form-input"
-              placeholder="name@example.com"
+              placeholder="partner@kitchen.com"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
@@ -56,20 +58,22 @@ function UserLogin() {
           <button
             type="submit"
             className="cravio-btn cravio-btn-primary"
-            style={{ width: "100%", marginTop: 10, padding: 12 }}
+            style={{ width: "100%", marginTop: 10, padding: 12, background: "#f59e0b", color: "#000" }}
           >
-            Log In
+            Partner Log In
           </button>
         </form>
 
         <div className="auth-footer-links">
-          Don't have an account?
-          <Link to="/user/signup">Create one</Link>
+          Need to register your kitchen?
+          <Link to="/partner/signup" style={{ color: "#f59e0b" }}>
+            Sign up here
+          </Link>
         </div>
 
         <div style={{ textAlign: "center", marginTop: 16, fontSize: 12 }}>
-          <Link to="/partner/login" style={{ color: "var(--text-muted)" }}>
-            Restaurant Partner? Sign in here →
+          <Link to="/user/login" style={{ color: "var(--text-muted)" }}>
+            ← Switch to Food Lover Login
           </Link>
         </div>
       </div>
@@ -77,4 +81,4 @@ function UserLogin() {
   );
 }
 
-export default UserLogin;
+export default PartnerLogin;

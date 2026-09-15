@@ -1,58 +1,24 @@
 import crypto from "crypto";
-import { promisify } from "util";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import foodPartnerModel from "../models/foodPartner.model.js";
 import userModel from "../models/user.model.js";
 import sessionModel from "../models/session.model.js";
 import config from "../config/config.js";
 import sendEmail from "../services/email.service.js";
 import { generateOtp, getOtpExpiry, getOtpHtml } from "../utils/utils.js";
-import otpModel from "../models/otp.model.js"
-
-const scryptAsync = promisify(crypto.scrypt);
+import otpModel from "../models/otp.model.js";
 
 
-// PASSWORD 
-
+// PASSWORD
 async function hashPassword(password) {
-    const salt = crypto.randomBytes(16).toString("hex");
+    const saltRounds = 12;
 
-    const derivedKey = await scryptAsync(
-        password,
-        salt,
-        64
-    );
-
-    return `${salt}:${derivedKey.toString("hex")}`;
+    return await bcrypt.hash(password, saltRounds);
 }
 
 async function comparePassword(password, storedPassword) {
-    const [salt, storedHash] = storedPassword.split(":");
-
-    if (!salt || !storedHash) {
-        return false;
-    }
-
-    const derivedKey = await scryptAsync(
-        password,
-        salt,
-        64
-    );
-
-    const storedHashBuffer = Buffer.from(
-        storedHash,
-        "hex"
-    );
-
-    if (storedHashBuffer.length !== derivedKey.length) {
-        return false;
-    }
-
-    return crypto.timingSafeEqual(
-        storedHashBuffer,
-        derivedKey
-    );
+    return await bcrypt.compare(password, storedPassword);
 }
 
 // JWT 
@@ -91,11 +57,10 @@ function hashRefreshToken(refreshToken) {
 
 
 // COOKIE
-
 function setRefreshTokenCookie(res, refreshToken) {
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: false, // true in production with HTTPS
+        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
         maxAge: 7 * 24 * 60 * 60 * 1000
@@ -103,20 +68,20 @@ function setRefreshTokenCookie(res, refreshToken) {
 }
 
 // REGISTER
-
 async function registerUser(req, res) {
     try {
-        const {
-            username,
-            email,
-            password
-        } = req.body;
+        let { username, email, password } = req.body;
 
+        // Validate input
         if (!username || !email || !password) {
             return res.status(400).json({
                 message: "Username, email and password are required"
             });
         }
+
+        // Normalize input
+        username = username.trim();
+        email = email.trim().toLowerCase();
 
         if (password.length < 8) {
             return res.status(400).json({
@@ -124,27 +89,45 @@ async function registerUser(req, res) {
             });
         }
 
-        const existingUser = await userModel.findOne({
-            $or: [
-                { username },
-                { email }
-            ]
+        // Check existing email
+        const existingEmail = await userModel.findOne({ email });
+
+        if (existingEmail) {
+            if (existingEmail.verified) {
+                return res.status(409).json({
+                    message: "Email already exists"
+                });
+            }
+
+            // Delete previous unverified registration
+            await otpModel.deleteMany({
+                user: existingEmail._id
+            });
+
+            await userModel.findByIdAndDelete(
+                existingEmail._id
+            );
+        }
+
+        // Check existing username
+        const existingUsername = await userModel.findOne({
+            username
         });
 
-        if (existingUser) {
+        if (existingUsername) {
             return res.status(409).json({
-                message: "Username or email already exists"
+                message: "Username already exists"
             });
         }
 
         // Hash password
-        const hash = await hashPassword(password);
+        const hashedPassword = await hashPassword(password);
 
         // Create unverified user
         const user = await userModel.create({
             username,
             email,
-            password: hash,
+            password: hashedPassword,
             verified: false
         });
 
@@ -152,12 +135,15 @@ async function registerUser(req, res) {
         const otp = generateOtp();
 
         // Hash OTP
-        const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+        const otpHash = crypto
+            .createHash("sha256")
+            .update(otp)
+            .digest("hex");
 
-        // OTP expiry - 10 minutes
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+        // OTP expiry
+        const expiresAt = getOtpExpiry();
 
-        // Store OTP hash
+        // Store OTP
         await otpModel.create({
             email,
             user: user._id,
@@ -169,11 +155,37 @@ async function registerUser(req, res) {
         const html = getOtpHtml(otp);
 
         // Send OTP
-        await sendEmail(email, "OTP Verification", `Your OTP is ${otp}`, html);
+        try {
+            await sendEmail(
+                email,
+                "OTP Verification",
+                `Your OTP is ${otp}`,
+                html
+            );
+        } catch (emailErr) {
+            console.error(
+                "Failed to send OTP email:",
+                emailErr.message
+            );
 
+            // Cleanup user and OTP
+            await otpModel.deleteMany({
+                user: user._id
+            });
+
+            await userModel.findByIdAndDelete(
+                user._id
+            );
+
+            return res.status(500).json({
+                message:
+                    "Failed to send verification email. Please try registering again."
+            });
+        }
+
+        // Success
         return res.status(201).json({
             message: "User registered. Please verify OTP.",
-
             user: {
                 id: user._id,
                 username: user.username,
@@ -183,7 +195,14 @@ async function registerUser(req, res) {
         });
 
     } catch (err) {
-        console.error(err);
+        console.error("Register error:", err);
+
+        // MongoDB duplicate key error
+        if (err.code === 11000) {
+            return res.status(409).json({
+                message: "Username or email already exists"
+            });
+        }
 
         return res.status(500).json({
             message: "Internal server error"
@@ -192,7 +211,6 @@ async function registerUser(req, res) {
 }
 
 // LOGIN
-
 async function loginUser(req, res) {
     try {
         const {
@@ -207,6 +225,13 @@ async function loginUser(req, res) {
             });
         }
         
+        if (username) {
+            username = username.trim();
+        }
+
+        if (email) {
+            email = email.trim().toLowerCase();
+        }
 
         const user = await userModel.findOne({
             $or: [
@@ -292,7 +317,6 @@ async function loginUser(req, res) {
 }
 
 // REFRESH TOKEN 
-
 async function refreshToken(req, res) {
     try {
         const currentRefreshToken =
@@ -368,8 +392,7 @@ async function refreshToken(req, res) {
     }
 }
 
-// LOGOUT 
-
+// LOGOUT
 async function logoutUser(req, res) {
     try {
         const refreshToken =
@@ -398,13 +421,13 @@ async function logoutUser(req, res) {
         // Clear cookies
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            secure: false,
+            secure: isProduction,
             sameSite: "lax",
             path: "/"
         });
         res.clearCookie("token", {
             httpOnly: true,
-            secure: false,
+            secure: isProduction,
             sameSite: "lax",
             path: "/"
         });
@@ -422,8 +445,7 @@ async function logoutUser(req, res) {
     }
 }
 
-// LOGOUT ALL DEVICES 
-
+// LOGOUT ALL DEVICES
 async function logoutAllDevices(req, res) {
     try {
         const refreshToken =
@@ -455,13 +477,13 @@ async function logoutAllDevices(req, res) {
         // Clear current device cookies
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            secure: false,
+            secure: isProduction,
             sameSite: "lax",
             path: "/"
         });
         res.clearCookie("token", {
             httpOnly: true,
-            secure: false,
+            secure: isProduction,
             sameSite: "lax",
             path: "/"
         });
@@ -480,7 +502,6 @@ async function logoutAllDevices(req, res) {
 }
 
 // VERIFY OTP
-
 async function verifyEmail(req, res) {
     try {
         const { otp, email } = req.body;
@@ -540,12 +561,15 @@ async function verifyEmail(req, res) {
                     id: partner._id,
                     role: partner.role || "foodPartner"
                 },
-                config.JWT_SECRET || process.env.JWT_SECRET
+                config.JWT_SECRET || process.env.JWT_SECRET,
+                {
+                    expiresIn: "7d"
+                }
             );
 
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: false,
+                secure: isProduction,
                 sameSite: "lax",
                 path: "/"
             });
@@ -645,9 +669,9 @@ async function registerFoodPartner(req, res) {
     try {
         const { name, email, password, phone, restaurantName, address } = req.body;
 
-        if (!name || !email || !password || !phone || !restaurantName || !address) {
+        if (!name || !email || !password || !phone || !restaurantName) {
             return res.status(400).json({
-                message: "Name, email, password, phone, restaurant name and address are required"
+                message: "Name, email, password, phone, and restaurant name are required"
             });
         }
 
@@ -656,12 +680,17 @@ async function registerFoodPartner(req, res) {
         });
 
         if (isAccountAlreadyExists) {
-            return res.status(400).json({
-                message: "Food partner already exists"
-            });
+            if (isAccountAlreadyExists.isVerified) {
+                return res.status(400).json({
+                    message: "Food partner already exists"
+                });
+            }
+            // Clean up previous unverified registration
+            await foodPartnerModel.findByIdAndDelete(isAccountAlreadyExists._id);
+            await otpModel.deleteMany({ partner: isAccountAlreadyExists._id });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await hashPassword(password);
 
         const foodPartner = await foodPartnerModel.create({
             name,
@@ -669,14 +698,14 @@ async function registerFoodPartner(req, res) {
             password: hashedPassword,
             phone,
             restaurantName,
-            address,
+            address: address || "",
             role: "foodPartner"
         });
 
         // Generate OTP for partner
         const otp = generateOtp();
         const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+        const expiresAt = getOtpExpiry();
 
         await otpModel.create({
             email,
@@ -690,8 +719,12 @@ async function registerFoodPartner(req, res) {
         try {
             await sendEmail(email, "Cravio Partner OTP Verification", `Your Partner OTP is ${otp}`, html);
         } catch (mailErr) {
-            console.error("Partner email send warning:", mailErr.message);
-            console.log(`\n========================================\n[DEV] Partner OTP for ${email}: ${otp}\n========================================\n`);
+            console.error("Partner email send failure:", mailErr.message);
+            await foodPartnerModel.findByIdAndDelete(foodPartner._id);
+            await otpModel.deleteMany({ partner: foodPartner._id });
+            return res.status(500).json({
+                message: "Failed to send verification email. Please try registering again."
+            });
         }
 
         return res.status(201).json({
@@ -733,7 +766,13 @@ async function loginFoodPartner(req, res) {
             });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, foodPartner.password);
+        if (!foodPartner.isVerified) {
+            return res.status(403).json({
+                message: "Please verify your email first"
+            });
+        }
+
+        const isPasswordValid = await comparePassword(password, foodPartner.password);
 
         if (!isPasswordValid) {
             return res.status(401).json({
@@ -746,12 +785,15 @@ async function loginFoodPartner(req, res) {
                 id: foodPartner._id,
                 role: foodPartner.role
             },
-            config.JWT_SECRET || process.env.JWT_SECRET
+            config.JWT_SECRET || process.env.JWT_SECRET,
+            {
+                expiresIn: "7d"
+            }
         );
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
+            secure: isProduction,
             sameSite: "lax",
             path: "/"
         });
@@ -782,13 +824,13 @@ async function logoutFoodPartner(req, res) {
     try {
         res.clearCookie("token", {
             httpOnly: true,
-            secure: false,
+            secure: isProduction,
             sameSite: "lax",
             path: "/"
         });
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            secure: false,
+            secure: isProduction,
             sameSite: "lax",
             path: "/"
         });
@@ -804,54 +846,9 @@ async function logoutFoodPartner(req, res) {
     }
 }
 
-// RESEND OTP
-async function resendOtp(req, res) {
-    try {
-        const { email } = req.body;
-        if (!email) {
-            return res.status(400).json({ message: "Email is required" });
-        }
-
-        const user = await userModel.findOne({ email });
-        const partner = !user ? await foodPartnerModel.findOne({ email }) : null;
-
-        if (!user && !partner) {
-            return res.status(404).json({ message: "Account not found with this email" });
-        }
-
-        const otp = generateOtp();
-        const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-
-        await otpModel.deleteMany({ email });
-
-        await otpModel.create({
-            email,
-            user: user ? user._id : undefined,
-            partner: partner ? partner._id : undefined,
-            otpHash,
-            expiresAt
-        });
-
-        const html = getOtpHtml(otp);
-        try {
-            await sendEmail(email, "Cravio OTP Verification", `Your new OTP is ${otp}`, html);
-        } catch (mailErr) {
-            console.error("Resend email warning:", mailErr.message);
-            console.log(`\n========================================\n[DEV] Resent OTP for ${email}: ${otp}\n========================================\n`);
-        }
-
-        return res.status(200).json({ message: "A new OTP has been sent to your email." });
-    } catch (err) {
-        console.error("Resend OTP error:", err);
-        return res.status(500).json({ message: "Failed to resend OTP" });
-    }
-}
-
 export default {
     registerUser,
     verifyEmail,
-    resendOtp,
     loginUser,
     refreshToken,
     logoutUser,

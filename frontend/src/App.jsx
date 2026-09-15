@@ -1,11 +1,12 @@
 import React from "react";
 import AppRoutes from "./routes/AppRoutes";
-import './App.css';
 
+/**
+ * App Root Component
+ * Mounts CRAVIO Food Delivery Client Routes
+ */
 function App() {
-  return (
-    <AppRoutes />
-  );
+  return <AppRoutes />;
 }
 
 export default App;

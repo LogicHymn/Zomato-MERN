@@ -4,7 +4,8 @@ const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: [true, "username is required"],
-        unique: true
+        unique: true,
+        trim: true
     },
 
     email: {
@@ -12,7 +13,11 @@ const userSchema = new mongoose.Schema({
         required: [true, "email is required"],
         unique: true,
         lowercase: true,
-        match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email address"]
+        trim: true,
+        match: [
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            "Invalid email address"
+        ]
     },
 
     password: {
@@ -23,10 +28,29 @@ const userSchema = new mongoose.Schema({
     verified: {
         type: Boolean,
         default: false
+    },
+
+    name: {
+        type: String,
+        trim: true,
+        default: ""
+    },
+
+    phone: {
+        type: String,
+        trim: true,
+        default: ""
+    },
+
+    address: {
+        type: String,
+        trim: true,
+        default: ""
     }
-}, { timestamps: true });
+}, {
+    timestamps: true
+});
 
 const userModel = mongoose.model("user", userSchema);
 
 export default userModel;
-

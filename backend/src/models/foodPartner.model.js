@@ -38,7 +38,7 @@ const foodPartnerSchema = new mongoose.Schema({
 
     address: {
         type: String,
-        required: true
+        trim: true
     },
 
     isVerified: {

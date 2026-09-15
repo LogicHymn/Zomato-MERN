@@ -14,7 +14,7 @@ router.post("/logout", authController.logoutUser);
 router.post("/logout-all-devices",authController.logoutAllDevices);
 
 router.post("/verify-otp", authController.verifyEmail);
-router.post("/resend-otp", authController.resendOtp);
+
 
 // Food Partner
 router.post("/food-partner/register", authController.registerFoodPartner);

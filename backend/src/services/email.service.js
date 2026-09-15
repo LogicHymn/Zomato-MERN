@@ -30,7 +30,7 @@ transporter.verify((error) => {
 async function sendEmail(to, subject, text, html) {
     try {
         const info = await transporter.sendMail({
-            from: `"Cravio" <${config.GOOGLE_USER}>`,
+            from: `"CRAVIO" <${config.GOOGLE_USER}>`,
             to,
             subject,
             text,
